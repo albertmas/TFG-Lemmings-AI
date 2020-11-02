@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bbdc60ed0220ae4496123ca0561be99, type: 3}
+  m_Name: HardTile
+  m_EditorClassIdentifier: 
+  tiles:
+  - {fileID: 11400000, guid: ad880ca1b5536204a94b1cf8512adec6, type: 2}
+  - {fileID: 11400000, guid: be4589f5fbd96594688eaeb6cd1d1f97, type: 2}
+  - {fileID: 11400000, guid: 89b62011adf0d6041badd5d536340142, type: 2}
+  destructable: 0
+  dangerous: 0
