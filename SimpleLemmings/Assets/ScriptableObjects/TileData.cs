@@ -8,6 +8,9 @@ public class TileData : ScriptableObject
 {
     public TileBase[] tiles;
 
+    [Tooltip("Can the tile be selected?")]
+    public bool selectable;
+
     [Tooltip("Can the tile be mined?")]
     public bool destructable;
 

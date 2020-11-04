@@ -11,7 +11,11 @@ public class SceneManager : MonoBehaviour
 
     Dictionary<TileBase, TileData> dataFromTiles;
 
-    // Start is called before the first frame update
+    public GameObject CellHighlight;
+
+    Coroutine fadeSpriteCoroutine;
+
+
     void Awake()
     {
         dataFromTiles = new Dictionary<TileBase, TileData>();
@@ -25,7 +29,7 @@ public class SceneManager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
+
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
@@ -42,6 +46,15 @@ public class SceneManager : MonoBehaviour
 
     void TileClicked(TileBase clickedTile, Vector3Int gridPos)
     {
+        // Highlight tile
+        CellHighlight.SetActive(true);
+        CellHighlight.transform.position = gridPos + map.cellSize / 2;
+        CellHighlight.GetComponent<SpriteRenderer>().material.color = Color.white;
+
+        // If highlight was fading, stop
+        if (fadeSpriteCoroutine != null)
+            StopCoroutine(fadeSpriteCoroutine);
+
         // Case empty tile
         if (clickedTile == null)
         {
@@ -51,8 +64,16 @@ public class SceneManager : MonoBehaviour
         }
 
         bool result = dataFromTiles.TryGetValue(clickedTile, out TileData clickedTileData);
-        if (result && clickedTileData.destructable)
-            map.SetTile(gridPos, null);
+        if (result && clickedTileData.selectable)
+        {
+            if (clickedTileData.destructable)
+                map.SetTile(gridPos, null);
+        }
+        else
+        {
+            // Fade cell highlight if cell cannot be selected
+            fadeSpriteCoroutine = StartCoroutine(FadeSprite(CellHighlight.GetComponent<SpriteRenderer>(), 0f, 0.5f));
+        }
     }
 
     public bool CheckForDamagingTile(Vector3 position)
@@ -70,5 +91,17 @@ public class SceneManager : MonoBehaviour
         }
 
         return false;
+    }
+
+
+    IEnumerator FadeSprite(SpriteRenderer sprite, float newAlpha, float fadeTime)
+    {
+        float alpha = sprite.material.color.a; // Save initial alpha
+        for (float t = 0.0f; t < 1.0f; t += Time.deltaTime / fadeTime)
+        {
+            Color newColor = new Color(1, 1, 1, Mathf.Lerp(alpha, newAlpha, t));
+            sprite.material.color = newColor;
+            yield return null;
+        }
     }
 }
