@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 720190522179758230}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.5664983, y: -1.022168, z: -25.351978}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -49,3 +49,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b5ae8e2067221cb489270701235df921, type: 2}
   - {fileID: 11400000, guid: 1a50f3d143ef63c43a5051397efb81c7, type: 2}
   CellHighlight: {fileID: 0}
+  UIBreakBlock: {fileID: 0}
+  UIPlaceUmbrella: {fileID: 0}

@@ -31,6 +31,8 @@ public class CreatureMovement : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         goingRight = !goingRight;
-        transform.localScale = new Vector3(goingRight ? -1 : 1, 1, 1);
+        Vector3 creatureScale = transform.localScale;
+        creatureScale = new Vector3(goingRight ? Mathf.Abs(creatureScale.x) : -Mathf.Abs(creatureScale.x), creatureScale.y, creatureScale.z); // TO FIX
+        transform.localScale = creatureScale; // new Vector3(goingRight ? 1 : -1, 1, 1);
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public class SceneManager : MonoBehaviour
 {
@@ -12,9 +13,16 @@ public class SceneManager : MonoBehaviour
     Dictionary<TileBase, TileData> dataFromTiles;
 
     public GameObject CellHighlight;
+    public GameObject UIBreakBlock;
+    public GameObject UIPlaceUmbrella;
+
+    public GameObject PrefabUmbrella;
+
+    TileBase selectedTile;
+    Vector3Int selectedTilePos;
 
     Coroutine fadeSpriteCoroutine;
-
+    bool interactingWithCell = false;
 
     void Awake()
     {
@@ -32,42 +40,88 @@ public class SceneManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButton(0) && !interactingWithCell)
         {
-            // Get clicked tile
+            // Get selected tile
             Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3Int gridPos = map.WorldToCell(mousePos);
-            TileBase clickedTile = map.GetTile(gridPos);
 
-            // Perform actions on selected tile depending on its type
-            TileClicked(clickedTile, gridPos);
+            // Refresh highlighted tile
+            if (gridPos != selectedTilePos)
+            {
+                selectedTile = map.GetTile(gridPos);
+                selectedTilePos = gridPos;
+                HighlightCell();
+            }
+        }
+
+        if (Input.GetMouseButtonUp(0) && !interactingWithCell)
+        {
+            // Perform actions on the selected tile depending on its type
+            TileClicked();
+        }
+        else if (Input.GetMouseButtonUp(0) && interactingWithCell)
+        {
+            interactingWithCell = false;
+            CellHighlight.SetActive(false);
+            UIBreakBlock.SetActive(false);
+            UIPlaceUmbrella.SetActive(false);
         }
     }
 
-    void TileClicked(TileBase clickedTile, Vector3Int gridPos)
+    void HighlightCell()
     {
         // Highlight tile
         CellHighlight.SetActive(true);
-        CellHighlight.transform.position = gridPos + map.cellSize / 2;
+        CellHighlight.transform.position = selectedTilePos + map.cellSize / 2;
         CellHighlight.GetComponent<SpriteRenderer>().material.color = Color.white;
 
         // If highlight was fading, stop
         if (fadeSpriteCoroutine != null)
+        {
             StopCoroutine(fadeSpriteCoroutine);
+            fadeSpriteCoroutine = null;
+        }
+    }
 
+    void TileClicked()
+    {
         // Case empty tile
-        if (clickedTile == null)
+        if (selectedTile == null)
         {
             // Option to place umbrella if tile below is empty too
+            if (true)
+            {
+                Vector3 worldPosition = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
+                worldPosition.y += map.cellSize.y * 1.5f; // Set position on top of the tile
+                Vector3 screenPosition = Camera.main.WorldToScreenPoint(worldPosition); // Get position in screen coords
+                RectTransformUtility.ScreenPointToWorldPointInRectangle(FindObjectOfType<Canvas>().GetComponent<RectTransform>(), screenPosition,
+                    null, out Vector3 buttonPos); // Transform screen coords to point in the canvas
+                UIPlaceUmbrella.SetActive(true);
+                UIPlaceUmbrella.GetComponent<RectTransform>().position = buttonPos;
+
+                interactingWithCell = true;
+            }
             // Option to build stairs if tile below is ground or continuing other stairs
+            // Option to place STOP if tile below is ground
             return;
         }
 
-        bool result = dataFromTiles.TryGetValue(clickedTile, out TileData clickedTileData);
+        bool result = dataFromTiles.TryGetValue(selectedTile, out TileData clickedTileData);
         if (result && clickedTileData.selectable)
         {
             if (clickedTileData.destructable)
-                map.SetTile(gridPos, null);
+            {
+                Vector3 worldPosition = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
+                worldPosition.y += map.cellSize.y * 1.5f; // Set position on top of the tile
+                Vector3 screenPosition = Camera.main.WorldToScreenPoint(worldPosition); // Get position in screen coords
+                RectTransformUtility.ScreenPointToWorldPointInRectangle(FindObjectOfType<Canvas>().GetComponent<RectTransform>(), screenPosition,
+                    null, out Vector3 buttonPos); // Transform screen coords to point in the canvas
+                UIBreakBlock.SetActive(true);
+                UIBreakBlock.GetComponent<RectTransform>().position = buttonPos;
+
+                interactingWithCell = true;
+            }
         }
         else
         {
@@ -91,6 +145,17 @@ public class SceneManager : MonoBehaviour
         }
 
         return false;
+    }
+
+    public void BreakBlock()
+    {
+        map.SetTile(selectedTilePos, null);
+    }
+
+    public void PlaceUmbrella()
+    {
+        Vector3 cellWorldPos = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
+        Instantiate(PrefabUmbrella, cellWorldPos, Quaternion.identity);
     }
 
 
