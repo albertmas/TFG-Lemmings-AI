@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5377335964090328789}
   - component: {fileID: 4834975381964250891}
   - component: {fileID: 8089527366384007508}
+  - component: {fileID: 7416904696832244263}
   m_Layer: 0
   m_Name: Umbrella
   m_TagString: Untagged
@@ -108,3 +109,15 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &7416904696832244263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5671326996774249044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b0ad130075ef3342bc1fbe3f1714fdb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
