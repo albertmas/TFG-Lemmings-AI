@@ -7,29 +7,41 @@ public class CreatureMovement : MonoBehaviour
 {
     public float movementSpeed = 1.0f;
     bool goingRight = true;
-    public bool isGrounded = false;
+    bool isGrounded = true;
+    float deadlyHeight = 2.0f;
+    Vector2 fallOrigin;
     bool hasUmbrella = false;
+    public bool climbingSlope = false;
 
-    Rigidbody2D rigidbody;
+    Rigidbody2D creatureRigidbody;
     SceneManager sceneManager;
+    public AudioClip hitGround;
     //public BoxCollider2D GroundTrigger;
 
     // Start is called before the first frame update
     void Start()
     {
-        rigidbody.GetComponent<Rigidbody2D>();
+        creatureRigidbody = GetComponent<Rigidbody2D>();
         sceneManager = FindObjectOfType<SceneManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        int direction = goingRight ? 1 : -1;
-        transform.Translate(Vector3.right * movementSpeed * direction * Time.deltaTime);
+        if (isGrounded)
+        {
+            int direction = goingRight ? 1 : -1;
+            transform.Translate(Vector3.right * movementSpeed * direction * Time.deltaTime);
+            if (climbingSlope)
+                transform.Translate(Vector3.up * movementSpeed * Time.deltaTime);
+            //creatureRigidbody.AddForce(Vector2.right * direction * 5.0f);
+            //float clampedSpeed = Mathf.Clamp(creatureRigidbody.velocity.x, -movementSpeed, movementSpeed);
+            //creatureRigidbody.velocity = new Vector2(clampedSpeed, creatureRigidbody.velocity.y);
+        }
 
         if (sceneManager.CheckForDamagingTile(transform.position - new Vector3(0f, 1f, 0f)))
         {
-            Destroy(gameObject);
+            Die();
         }
     }
 
@@ -39,11 +51,45 @@ public class CreatureMovement : MonoBehaviour
         Vector3 creatureScale = transform.localScale;
         creatureScale = new Vector3(goingRight ? Mathf.Abs(creatureScale.x) : -Mathf.Abs(creatureScale.x), creatureScale.y, creatureScale.z); // TO FIX
         transform.localScale = creatureScale; // new Vector3(goingRight ? 1 : -1, 1, 1);
+        creatureRigidbody.velocity = new Vector2(0f, creatureRigidbody.velocity.y);
     }
 
-    public void UseUmbrella()
+    public void Fall()
+    {
+        fallOrigin = transform.position;
+        isGrounded = false;
+    }
+
+    public void Land()
+    {
+        if (!isGrounded)
+        {
+            Vector2 landingPos = transform.position;
+            float fallHeight = fallOrigin.y - landingPos.y;
+
+            if (hasUmbrella)
+            {
+                hasUmbrella = false;
+                creatureRigidbody.gravityScale = 3;
+            }
+            else if (Mathf.Abs(fallHeight) >= deadlyHeight)
+            {
+                Die();
+            }
+
+            isGrounded = true;
+        }
+    }
+
+    public void EquipUmbrella()
     {
         hasUmbrella = true;
-        //rigidbody.gravityScale = 1;
+        creatureRigidbody.gravityScale = .05f;
+    }
+
+    void Die()
+    {
+        sceneManager.PlaySound(hitGround);
+        Destroy(gameObject);
     }
 }

@@ -15,17 +15,23 @@ public class SceneManager : MonoBehaviour
     public GameObject CellHighlight;
     public GameObject UIBreakBlock;
     public GameObject UIPlaceUmbrella;
+    public GameObject UIBuildRStairs;
+    public GameObject UIBuildLStairs;
 
     public GameObject PrefabUmbrella;
+    public GameObject PrefabStairs;
 
     TileBase selectedTile;
-    Vector3Int selectedTilePos;
+    Vector3Int selectedTilePos = Vector3Int.one;
 
     Coroutine fadeSpriteCoroutine;
     bool interactingWithCell = false;
 
+    AudioSource audioSource;
+
     void Awake()
     {
+        // Create Dictionary and fill it with each tile type and its data
         dataFromTiles = new Dictionary<TileBase, TileData>();
 
         foreach (var data in tileDatas)
@@ -37,6 +43,10 @@ public class SceneManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     void Update()
     {
@@ -62,10 +72,13 @@ public class SceneManager : MonoBehaviour
         }
         else if (Input.GetMouseButtonUp(0) && interactingWithCell)
         {
+            // Remove any active buttons from screen
             interactingWithCell = false;
             CellHighlight.SetActive(false);
             UIBreakBlock.SetActive(false);
             UIPlaceUmbrella.SetActive(false);
+            UIBuildRStairs.SetActive(false);
+            UIBuildLStairs.SetActive(false);
         }
     }
 
@@ -99,6 +112,20 @@ public class SceneManager : MonoBehaviour
                     null, out Vector3 buttonPos); // Transform screen coords to point in the canvas
                 UIPlaceUmbrella.SetActive(true);
                 UIPlaceUmbrella.GetComponent<RectTransform>().position = buttonPos;
+
+                worldPosition.x -= map.cellSize.x * 1.1f;
+                screenPosition = Camera.main.WorldToScreenPoint(worldPosition); // Get position in screen coords
+                RectTransformUtility.ScreenPointToWorldPointInRectangle(FindObjectOfType<Canvas>().GetComponent<RectTransform>(), screenPosition,
+                    null, out buttonPos); // Transform screen coords to point in the canvas
+                UIBuildRStairs.SetActive(true);
+                UIBuildRStairs.GetComponent<RectTransform>().position = buttonPos;
+
+                worldPosition.x += map.cellSize.x * 2.2f;
+                screenPosition = Camera.main.WorldToScreenPoint(worldPosition); // Get position in screen coords
+                RectTransformUtility.ScreenPointToWorldPointInRectangle(FindObjectOfType<Canvas>().GetComponent<RectTransform>(), screenPosition,
+                    null, out buttonPos); // Transform screen coords to point in the canvas
+                UIBuildLStairs.SetActive(true);
+                UIBuildLStairs.GetComponent<RectTransform>().position = buttonPos;
 
                 interactingWithCell = true;
             }
@@ -150,12 +177,34 @@ public class SceneManager : MonoBehaviour
     public void BreakBlock()
     {
         map.SetTile(selectedTilePos, null);
+        selectedTilePos = Vector3Int.one; // Reset selected tile pos
     }
 
     public void PlaceUmbrella()
     {
         Vector3 cellWorldPos = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
         Instantiate(PrefabUmbrella, cellWorldPos, Quaternion.identity);
+        selectedTilePos = Vector3Int.one; // Reset selected tile pos
+    }
+
+    public void BuildRStairs()
+    {
+        Vector3 cellWorldPos = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
+        Instantiate(PrefabStairs, cellWorldPos, Quaternion.identity);
+        selectedTilePos = Vector3Int.one; // Reset selected tile pos
+    }
+
+    public void BuildLStairs()
+    {
+        Vector3 cellWorldPos = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
+        Instantiate(PrefabStairs, cellWorldPos, Quaternion.identity);
+        selectedTilePos = Vector3Int.one; // Reset selected tile pos
+    }
+
+    public void PlaySound(AudioClip sound)
+    {
+        audioSource.clip = sound;
+        audioSource.Play();
     }
 
 

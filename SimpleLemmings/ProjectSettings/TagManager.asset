@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Creature
   - ColliderTilemap
+  - Stairs
   layers:
   - Default
   - TransparentFX

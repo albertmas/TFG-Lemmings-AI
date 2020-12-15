@@ -8,7 +8,7 @@ public class Umbrella : MonoBehaviour
     {
         if (collision.gameObject.tag == "Creature")
         {
-            collision.gameObject.GetComponent<CreatureMovement>().UseUmbrella();
+            collision.gameObject.GetComponent<CreatureMovement>().EquipUmbrella();
         }
     }
 }

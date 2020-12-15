@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GroundDetector : MonoBehaviour
 {
+    int triggerCount = 0;
+
     CreatureMovement CreatureMovement;
 
     void Start()
@@ -13,17 +15,21 @@ public class GroundDetector : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("ColliderTilemap"))
+        if (other.CompareTag("ColliderTilemap") || other.CompareTag("Stairs"))
         {
-            CreatureMovement.isGrounded = true;
+            triggerCount++;
+            if (triggerCount == 1)
+                CreatureMovement.Land();
         }
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("ColliderTilemap"))
+        if (other.CompareTag("ColliderTilemap") || other.CompareTag("Stairs"))
         {
-            CreatureMovement.isGrounded = false;
+            triggerCount--;
+            if (triggerCount == 0)
+                CreatureMovement.Fall();
         }
     }
 }
