@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SceneManager : MonoBehaviour
@@ -17,9 +18,13 @@ public class SceneManager : MonoBehaviour
     public GameObject UIPlaceUmbrella;
     public GameObject UIBuildRStairs;
     public GameObject UIBuildLStairs;
+    public GameObject UIDemolishBlock;
 
     public GameObject PrefabUmbrella;
     public GameObject PrefabStairs;
+
+    public TileBase TileRStairs;
+    public TileBase TileLStairs;
 
     TileBase selectedTile;
     Vector3Int selectedTilePos = Vector3Int.one;
@@ -50,6 +55,8 @@ public class SceneManager : MonoBehaviour
 
     void Update()
     {
+        //if (Input.GetKeyUp(KeyCode.R)) { SceneManager.LoadScene("Level 1"); }
+
         if (Input.GetMouseButton(0) && !interactingWithCell)
         {
             // Get selected tile
@@ -79,6 +86,7 @@ public class SceneManager : MonoBehaviour
             UIPlaceUmbrella.SetActive(false);
             UIBuildRStairs.SetActive(false);
             UIBuildLStairs.SetActive(false);
+            UIDemolishBlock.SetActive(false);
         }
     }
 
@@ -87,7 +95,7 @@ public class SceneManager : MonoBehaviour
         // Highlight tile
         CellHighlight.SetActive(true);
         CellHighlight.transform.position = selectedTilePos + map.cellSize / 2;
-        CellHighlight.GetComponent<SpriteRenderer>().material.color = Color.white;
+        CellHighlight.GetComponent<SpriteRenderer>().material.color = Color.white; // Reset alpha to 1f
 
         // If highlight was fading, stop
         if (fadeSpriteCoroutine != null)
@@ -149,6 +157,18 @@ public class SceneManager : MonoBehaviour
 
                 interactingWithCell = true;
             }
+            if (clickedTileData.demolishable)
+            {
+                Vector3 worldPosition = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
+                worldPosition.y += map.cellSize.y * 1.5f; // Set position on top of the tile
+                Vector3 screenPosition = Camera.main.WorldToScreenPoint(worldPosition); // Get position in screen coords
+                RectTransformUtility.ScreenPointToWorldPointInRectangle(FindObjectOfType<Canvas>().GetComponent<RectTransform>(), screenPosition,
+                    null, out Vector3 buttonPos); // Transform screen coords to point in the canvas
+                UIDemolishBlock.SetActive(true);
+                UIDemolishBlock.GetComponent<RectTransform>().position = buttonPos;
+
+                interactingWithCell = true;
+            }
         }
         else
         {
@@ -189,15 +209,18 @@ public class SceneManager : MonoBehaviour
 
     public void BuildRStairs()
     {
-        Vector3 cellWorldPos = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
-        Instantiate(PrefabStairs, cellWorldPos, Quaternion.identity);
+        //Vector3 cellWorldPos = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
+        //Instantiate(PrefabStairs, cellWorldPos, Quaternion.identity);
+        map.SetTile(selectedTilePos, TileRStairs);
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
     }
 
     public void BuildLStairs()
     {
-        Vector3 cellWorldPos = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
-        Instantiate(PrefabStairs, cellWorldPos, Quaternion.identity);
+        //Vector3 cellWorldPos = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
+        //GameObject stairs = Instantiate(PrefabStairs, cellWorldPos, Quaternion.identity);
+        //stairs.transform.localScale = new Vector3(-1f, 1f, 1f);
+        map.SetTile(selectedTilePos, TileLStairs);
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
     }
 
@@ -205,6 +228,12 @@ public class SceneManager : MonoBehaviour
     {
         audioSource.clip = sound;
         audioSource.Play();
+    }
+
+    public void DemolishBlock()
+    {
+        map.SetTile(selectedTilePos, null);
+        selectedTilePos = Vector3Int.one; // Reset selected tile pos
     }
 
 

@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tiles:
   - {fileID: 11400000, guid: 26e14870aba836640be78d61e25cc95a, type: 2}
+  - {fileID: 11400000, guid: fa0ea0961f780544ebee302357115a9d, type: 2}
   selectable: 1
   destructable: 1
   damaging: 0
+  demolishable: 0
