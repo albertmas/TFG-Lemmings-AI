@@ -19,4 +19,7 @@ public class TileData : ScriptableObject
 
     [Tooltip("Can the tile me demolished? Used for item tiles")]
     public bool demolishable;
+
+    [Tooltip("Is this a top tile? Used for adding detail")]
+    public bool top;
 }

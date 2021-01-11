@@ -19,3 +19,4 @@ MonoBehaviour:
   destructable: 1
   damaging: 0
   demolishable: 0
+  top: 0

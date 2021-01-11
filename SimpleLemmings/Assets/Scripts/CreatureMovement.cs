@@ -6,9 +6,10 @@ using UnityEngine.Tilemaps;
 public class CreatureMovement : MonoBehaviour
 {
     public float movementSpeed = 1.0f;
+    public float fallingGravity = 3.0f;
     bool goingRight = true;
-    bool isGrounded = true;
-    float deadlyHeight = 2.0f;
+    bool isGrounded = false;
+    readonly float deadlyHeight = 2.1f;
     Vector2 fallOrigin;
     bool hasUmbrella = false;
     public bool climbingSlope = false;
@@ -23,6 +24,8 @@ public class CreatureMovement : MonoBehaviour
     {
         creatureRigidbody = GetComponent<Rigidbody2D>();
         sceneManager = FindObjectOfType<SceneManager>();
+
+        fallOrigin = transform.position;
     }
 
     // Update is called once per frame
@@ -30,6 +33,7 @@ public class CreatureMovement : MonoBehaviour
     {
         if (isGrounded)
         {
+            // Creature is walking
             int direction = goingRight ? 1 : -1;
             transform.Translate(Vector3.right * movementSpeed * direction * Time.deltaTime);
             if (climbingSlope)
@@ -37,6 +41,16 @@ public class CreatureMovement : MonoBehaviour
             //creatureRigidbody.AddForce(Vector2.right * direction * 5.0f);
             //float clampedSpeed = Mathf.Clamp(creatureRigidbody.velocity.x, -movementSpeed, movementSpeed);
             //creatureRigidbody.velocity = new Vector2(clampedSpeed, creatureRigidbody.velocity.y);
+        }
+        else
+        {
+            // Creature is falling
+            creatureRigidbody.AddForce(Vector3.down * fallingGravity); // Push down
+            if (hasUmbrella) // Cap max Y velocity if creature has an umbrella
+            {
+                float clampedSpeed = Mathf.Clamp(creatureRigidbody.velocity.y, -movementSpeed, movementSpeed);
+                creatureRigidbody.velocity = new Vector2(creatureRigidbody.velocity.x, clampedSpeed);
+            }
         }
 
         if (sceneManager.CheckForDamagingTile(transform.position - new Vector3(0f, 1f, 0f)))
@@ -70,7 +84,7 @@ public class CreatureMovement : MonoBehaviour
             if (hasUmbrella)
             {
                 hasUmbrella = false;
-                creatureRigidbody.gravityScale = 3;
+                //creatureRigidbody.gravityScale = 3;
             }
             else if (Mathf.Abs(fallHeight) >= deadlyHeight)
             {
@@ -84,7 +98,7 @@ public class CreatureMovement : MonoBehaviour
     public void EquipUmbrella()
     {
         hasUmbrella = true;
-        creatureRigidbody.gravityScale = .05f;
+        //creatureRigidbody.gravityScale = .05f;
     }
 
     void Die()

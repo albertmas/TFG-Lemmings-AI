@@ -10,13 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4bbdc60ed0220ae4496123ca0561be99, type: 3}
-  m_Name: ItemTile
+  m_Name: TopTile
   m_EditorClassIdentifier: 
   tiles:
-  - {fileID: 11400000, guid: 8d6c0c4d5127eda408718448eecfd34b, type: 2}
-  - {fileID: 11400000, guid: 45dd27634bffc43469fc840334b82525, type: 2}
-  selectable: 1
+  - {fileID: 11400000, guid: 6d9914b77e1c6d248aa26a6ee8fb985a, type: 2}
+  selectable: 0
   destructable: 0
   damaging: 0
-  demolishable: 1
-  top: 0
+  demolishable: 0
+  top: 1

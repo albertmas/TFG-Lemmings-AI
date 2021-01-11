@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class SceneManager : MonoBehaviour
 {
     public Tilemap map;
+    public Tilemap mapDetail;
 
     public List<TileData> tileDatas;
 
@@ -25,6 +26,7 @@ public class SceneManager : MonoBehaviour
 
     public TileBase TileRStairs;
     public TileBase TileLStairs;
+    public TileBase TileTop;
 
     TileBase selectedTile;
     Vector3Int selectedTilePos = Vector3Int.one;
@@ -55,7 +57,7 @@ public class SceneManager : MonoBehaviour
 
     void Update()
     {
-        //if (Input.GetKeyUp(KeyCode.R)) { SceneManager.LoadScene("Level 1"); }
+        if (Input.GetKeyUp(KeyCode.R)) { UnityEngine.SceneManagement.SceneManager.LoadScene("Level 1"); }
 
         if (Input.GetMouseButton(0) && !interactingWithCell)
         {
@@ -196,7 +198,29 @@ public class SceneManager : MonoBehaviour
 
     public void BreakBlock()
     {
-        map.SetTile(selectedTilePos, null);
+        map.SetTile(selectedTilePos, null); // Remove this tile
+        mapDetail.SetTile(selectedTilePos, null); // Romove detail tile on same pos
+
+        // Check if detail tile above is a top tile. Remove it if so
+        TileBase aboveTile = mapDetail.GetTile(selectedTilePos + Vector3Int.up);
+        if (aboveTile)
+        {
+            bool result = dataFromTiles.TryGetValue(aboveTile, out TileData aboveTileData);
+
+            if (result && aboveTileData.top)
+                mapDetail.SetTile(selectedTilePos + Vector3Int.up, null);
+        }
+
+        // Check if there is a tile below. If so, add a top tile over it
+        TileBase belowTile = map.GetTile(selectedTilePos + Vector3Int.down);
+        if (belowTile)
+        {
+            bool result = dataFromTiles.TryGetValue(belowTile, out TileData belowTileData);
+
+            if (result && !belowTileData.damaging)
+                mapDetail.SetTile(selectedTilePos, TileTop);
+        }
+
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
     }
 

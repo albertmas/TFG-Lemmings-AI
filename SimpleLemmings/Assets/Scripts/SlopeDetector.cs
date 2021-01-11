@@ -18,7 +18,7 @@ public class SlopeDetector : MonoBehaviour
         if (other.CompareTag("Stairs") || other.CompareTag("ColliderTilemap"))
         {
             creatureMovement.climbingSlope = true;
-            creatureRigidbody.gravityScale = 0.002f;
+            //creatureRigidbody.gravityScale = 0.002f;
         }
     }
 
@@ -27,7 +27,7 @@ public class SlopeDetector : MonoBehaviour
         if (other.CompareTag("Stairs") || other.CompareTag("ColliderTilemap"))
         {
             creatureMovement.climbingSlope = false;
-            creatureRigidbody.gravityScale = 3f;
+            //creatureRigidbody.gravityScale = 3f;
         }
     }
 }
