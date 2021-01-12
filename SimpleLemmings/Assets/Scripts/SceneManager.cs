@@ -14,7 +14,7 @@ public class SceneManager : MonoBehaviour
 
     Dictionary<TileBase, TileData> dataFromTiles;
 
-    public GameObject CellHighlight;
+    public GameObject CellSelection;
     public GameObject UIBreakBlock;
     public GameObject UIPlaceUmbrella;
     public GameObject UIBuildRStairs;
@@ -22,14 +22,17 @@ public class SceneManager : MonoBehaviour
     public GameObject UIDemolishBlock;
 
     public GameObject PrefabUmbrella;
-    public GameObject PrefabStairs;
+    public GameObject PrefabStairs; // TOREMOVE
 
+    public TileBase TileHighlight;
     public TileBase TileRStairs;
     public TileBase TileLStairs;
     public TileBase TileTop;
 
     TileBase selectedTile;
     Vector3Int selectedTilePos = Vector3Int.one;
+
+    Dictionary<Vector3Int, GameObject> placedUmbrellas;
 
     Coroutine fadeSpriteCoroutine;
     bool interactingWithCell = false;
@@ -53,6 +56,7 @@ public class SceneManager : MonoBehaviour
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
+        placedUmbrellas = new Dictionary<Vector3Int, GameObject>();
     }
 
     void Update()
@@ -61,16 +65,16 @@ public class SceneManager : MonoBehaviour
 
         if (Input.GetMouseButton(0) && !interactingWithCell)
         {
-            // Get selected tile
+            // Get newly selected tile
             Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3Int gridPos = map.WorldToCell(mousePos);
 
-            // Refresh highlighted tile
+            // Refresh selected tile
             if (gridPos != selectedTilePos)
             {
                 selectedTile = map.GetTile(gridPos);
                 selectedTilePos = gridPos;
-                HighlightCell();
+                SelectCell();
             }
         }
 
@@ -83,23 +87,24 @@ public class SceneManager : MonoBehaviour
         {
             // Remove any active buttons from screen
             interactingWithCell = false;
-            CellHighlight.SetActive(false);
+            CellSelection.SetActive(false);
             UIBreakBlock.SetActive(false);
             UIPlaceUmbrella.SetActive(false);
             UIBuildRStairs.SetActive(false);
             UIBuildLStairs.SetActive(false);
             UIDemolishBlock.SetActive(false);
+            selectedTilePos = Vector3Int.one; // Reset selected tile pos
         }
     }
 
-    void HighlightCell()
+    void SelectCell()
     {
-        // Highlight tile
-        CellHighlight.SetActive(true);
-        CellHighlight.transform.position = selectedTilePos + map.cellSize / 2;
-        CellHighlight.GetComponent<SpriteRenderer>().material.color = Color.white; // Reset alpha to 1f
+        // Select tile
+        CellSelection.SetActive(true);
+        CellSelection.transform.position = selectedTilePos + map.cellSize / 2;
+        CellSelection.GetComponent<SpriteRenderer>().material.color = Color.white; // Reset alpha to 1f
 
-        // If highlight was fading, stop
+        // If selection sprite was fading, stop
         if (fadeSpriteCoroutine != null)
         {
             StopCoroutine(fadeSpriteCoroutine);
@@ -171,11 +176,16 @@ public class SceneManager : MonoBehaviour
 
                 interactingWithCell = true;
             }
+            if (clickedTileData.highlight)
+            {
+                RemoveUmbrella();
+            }
         }
         else
         {
-            // Fade cell highlight if cell cannot be selected
-            fadeSpriteCoroutine = StartCoroutine(FadeSprite(CellHighlight.GetComponent<SpriteRenderer>(), 0f, 0.5f));
+            // Fade cell selection sprite if cell cannot be selected
+            fadeSpriteCoroutine = StartCoroutine(FadeSprite(CellSelection.GetComponent<SpriteRenderer>(), 0f, 0.5f));
+            selectedTilePos = Vector3Int.one; // Reset selected tile pos
         }
     }
 
@@ -217,17 +227,35 @@ public class SceneManager : MonoBehaviour
         {
             bool result = dataFromTiles.TryGetValue(belowTile, out TileData belowTileData);
 
-            if (result && !belowTileData.damaging)
+            if (result && !belowTileData.damaging && !belowTileData.destructable)
                 mapDetail.SetTile(selectedTilePos, TileTop);
         }
 
+        CellSelection.SetActive(false);
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
     }
 
     public void PlaceUmbrella()
     {
+        map.SetTile(selectedTilePos, TileHighlight);
         Vector3 cellWorldPos = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
-        Instantiate(PrefabUmbrella, cellWorldPos, Quaternion.identity);
+        GameObject umbrella = Instantiate(PrefabUmbrella, cellWorldPos, Quaternion.identity);
+        placedUmbrellas.Add(selectedTilePos, umbrella);
+        CellSelection.SetActive(false);
+        selectedTilePos = Vector3Int.one; // Reset selected tile pos
+    }
+
+    public void RemoveUmbrella()
+    {
+        map.SetTile(selectedTilePos, null); // Remove tile highlight
+        // Remove umbrella
+        placedUmbrellas.TryGetValue(selectedTilePos, out GameObject umbrella);
+        if (umbrella)
+        {
+            Destroy(umbrella);
+            placedUmbrellas.Remove(selectedTilePos);
+        }
+        CellSelection.SetActive(false);
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
     }
 
@@ -236,6 +264,7 @@ public class SceneManager : MonoBehaviour
         //Vector3 cellWorldPos = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
         //Instantiate(PrefabStairs, cellWorldPos, Quaternion.identity);
         map.SetTile(selectedTilePos, TileRStairs);
+        CellSelection.SetActive(false);
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
     }
 
@@ -245,6 +274,7 @@ public class SceneManager : MonoBehaviour
         //GameObject stairs = Instantiate(PrefabStairs, cellWorldPos, Quaternion.identity);
         //stairs.transform.localScale = new Vector3(-1f, 1f, 1f);
         map.SetTile(selectedTilePos, TileLStairs);
+        CellSelection.SetActive(false);
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
     }
 
@@ -257,6 +287,7 @@ public class SceneManager : MonoBehaviour
     public void DemolishBlock()
     {
         map.SetTile(selectedTilePos, null);
+        CellSelection.SetActive(false);
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
     }
 

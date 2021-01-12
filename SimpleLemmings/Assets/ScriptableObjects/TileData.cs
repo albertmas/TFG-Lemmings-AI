@@ -22,4 +22,7 @@ public class TileData : ScriptableObject
 
     [Tooltip("Is this a top tile? Used for adding detail")]
     public bool top;
+
+    [Tooltip("Is this a highlight tile? Used for marking placed items")]
+    public bool highlight;
 }

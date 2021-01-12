@@ -259,7 +259,7 @@ GameObject:
   - component: {fileID: 179686855}
   - component: {fileID: 179686854}
   m_Layer: 0
-  m_Name: Cell Highlight
+  m_Name: Cell Selection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1978,6 +1978,15 @@ Tilemap:
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1073741825
+  - first: {x: -8, y: -1, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 1
+      m_TileSpriteIndex: 0
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      m_AllTileFlags: 1073741825
   - first: {x: -5, y: -1, z: 0}
     second:
       serializedVersion: 2
@@ -2432,14 +2441,14 @@ Tilemap:
   m_TileAssetArray:
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  - m_RefCount: 21
+  - m_RefCount: 22
     m_Data: {fileID: 11400000, guid: 6d9914b77e1c6d248aa26a6ee8fb985a, type: 2}
   - m_RefCount: 92
     m_Data: {fileID: 11400000, guid: f36bb077784b19243908b152a53bc131, type: 2}
   - m_RefCount: 8
     m_Data: {fileID: 11400000, guid: 4156657fd1c68bc48a1df352f41fe580, type: 2}
   m_TileSpriteArray:
-  - m_RefCount: 21
+  - m_RefCount: 22
     m_Data: {fileID: 21300000, guid: aa6f9d27c842fe943906adf205d6e1aa, type: 3}
   - m_RefCount: 0
     m_Data: {fileID: 0}
@@ -2448,7 +2457,7 @@ Tilemap:
   - m_RefCount: 8
     m_Data: {fileID: 21300000, guid: 7ec0686205456204f83bcecde154c812, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 121
+  - m_RefCount: 122
     m_Data:
       e00: 1
       e01: 0
@@ -2467,7 +2476,7 @@ Tilemap:
       e32: 0
       e33: 1
   m_TileColorArray:
-  - m_RefCount: 121
+  - m_RefCount: 122
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   - m_RefCount: 0
     m_Data: {r: 0, g: 0, b: 0, a: 0}
@@ -5065,6 +5074,17 @@ PrefabInstance:
       objectReference: {fileID: 179686853}
     - target: {fileID: 720190522179758953, guid: db3b66a497f177c4bbc3d6f26d392398,
         type: 3}
+      propertyPath: CellSelection
+      value: 
+      objectReference: {fileID: 179686853}
+    - target: {fileID: 720190522179758953, guid: db3b66a497f177c4bbc3d6f26d392398,
+        type: 3}
+      propertyPath: TileHighlight
+      value: 
+      objectReference: {fileID: 11400000, guid: dc5c9c50779cd8f4c9624ffff6a5391c,
+        type: 2}
+    - target: {fileID: 720190522179758953, guid: db3b66a497f177c4bbc3d6f26d392398,
+        type: 3}
       propertyPath: PrefabUmbrella
       value: 
       objectReference: {fileID: 5671326996774249044, guid: 84baaa1afbcf96349884f542eb4f8264,
@@ -5097,7 +5117,7 @@ PrefabInstance:
     - target: {fileID: 720190522179758953, guid: db3b66a497f177c4bbc3d6f26d392398,
         type: 3}
       propertyPath: tileDatas.Array.size
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 720190522179758953, guid: db3b66a497f177c4bbc3d6f26d392398,
         type: 3}
@@ -5110,6 +5130,12 @@ PrefabInstance:
       propertyPath: tileDatas.Array.data[4]
       value: 
       objectReference: {fileID: 11400000, guid: 40b0ffb0f1d33784dba4f653a972e30f,
+        type: 2}
+    - target: {fileID: 720190522179758953, guid: db3b66a497f177c4bbc3d6f26d392398,
+        type: 3}
+      propertyPath: tileDatas.Array.data[5]
+      value: 
+      objectReference: {fileID: 11400000, guid: bdc04f39a40fdc34182f883e92e55eff,
         type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: db3b66a497f177c4bbc3d6f26d392398, type: 3}
