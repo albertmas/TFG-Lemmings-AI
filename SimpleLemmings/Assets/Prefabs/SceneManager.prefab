@@ -45,17 +45,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   map: {fileID: 0}
+  mapDetail: {fileID: 0}
   tileDatas:
   - {fileID: 11400000, guid: 40dd9a1442e584d43ab8871ebaa2393e, type: 2}
   - {fileID: 11400000, guid: b5ae8e2067221cb489270701235df921, type: 2}
   - {fileID: 11400000, guid: 1a50f3d143ef63c43a5051397efb81c7, type: 2}
-  CellHighlight: {fileID: 0}
+  - {fileID: 11400000, guid: 9fa84727dc21af1468a4b981f062fec5, type: 2}
+  - {fileID: 11400000, guid: 40b0ffb0f1d33784dba4f653a972e30f, type: 2}
+  - {fileID: 11400000, guid: bdc04f39a40fdc34182f883e92e55eff, type: 2}
+  CellSelection: {fileID: 0}
   UIBreakBlock: {fileID: 0}
   UIPlaceUmbrella: {fileID: 0}
   UIBuildRStairs: {fileID: 0}
   UIBuildLStairs: {fileID: 0}
-  PrefabUmbrella: {fileID: 0}
-  PrefabStairs: {fileID: 0}
+  UIDemolishBlock: {fileID: 0}
+  PrefabUmbrella: {fileID: 5671326996774249044, guid: 84baaa1afbcf96349884f542eb4f8264,
+    type: 3}
+  TileHighlight: {fileID: 11400000, guid: dc5c9c50779cd8f4c9624ffff6a5391c, type: 2}
+  TileRStairs: {fileID: 11400000, guid: 45dd27634bffc43469fc840334b82525, type: 2}
+  TileLStairs: {fileID: 11400000, guid: 8d6c0c4d5127eda408718448eecfd34b, type: 2}
+  TileTop: {fileID: 11400000, guid: 6d9914b77e1c6d248aa26a6ee8fb985a, type: 2}
 --- !u!82 &4311044875421007922
 AudioSource:
   m_ObjectHideFlags: 0

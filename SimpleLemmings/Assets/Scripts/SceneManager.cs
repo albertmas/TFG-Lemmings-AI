@@ -7,23 +7,29 @@ using UnityEngine.UI;
 
 public class SceneManager : MonoBehaviour
 {
+    [Header("Tilemaps")]
     public Tilemap map;
     public Tilemap mapDetail;
 
+    [Space]
     public List<TileData> tileDatas;
 
     Dictionary<TileBase, TileData> dataFromTiles;
 
+    [Header("UI gameobjects")]
     public GameObject CellSelection;
     public GameObject UIBreakBlock;
     public GameObject UIPlaceUmbrella;
     public GameObject UIBuildRStairs;
     public GameObject UIBuildLStairs;
     public GameObject UIDemolishBlock;
+    public GameObject UIVictory;
+    public GameObject UIDefeat;
 
+    [Space]
     public GameObject PrefabUmbrella;
-    public GameObject PrefabStairs; // TOREMOVE
 
+    [Header("Tiles")]
     public TileBase TileHighlight;
     public TileBase TileRStairs;
     public TileBase TileLStairs;
@@ -61,7 +67,7 @@ public class SceneManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyUp(KeyCode.R)) { UnityEngine.SceneManagement.SceneManager.LoadScene("Level 1"); }
+        if (Input.GetKeyUp(KeyCode.R)) { ReloadScene(); }
 
         if (Input.GetMouseButton(0) && !interactingWithCell)
         {
@@ -289,6 +295,39 @@ public class SceneManager : MonoBehaviour
         map.SetTile(selectedTilePos, null);
         CellSelection.SetActive(false);
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
+    }
+
+
+    public void ReloadScene()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
+    void Victory()
+    {
+        UIVictory.SetActive(true);
+    }
+
+    void Defeat()
+    {
+        UIDefeat.SetActive(true);
+    }
+
+    public void CreatureSaved()
+    {
+        // Just using 1 creature for now, so call Victory
+        Invoke("Victory", 1f);
+    }
+
+    public void CreatureDefeated()
+    {
+        // Just using 1 creature for now, so call Defeat
+        Invoke("Defeat", 1f);
     }
 
 

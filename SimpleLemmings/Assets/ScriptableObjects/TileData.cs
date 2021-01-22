@@ -25,4 +25,7 @@ public class TileData : ScriptableObject
 
     [Tooltip("Is this a highlight tile? Used for marking placed items")]
     public bool highlight;
+
+    [Tooltip("Is this a portal tile?")]
+    public bool portal;
 }

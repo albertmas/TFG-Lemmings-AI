@@ -14,9 +14,12 @@ public class CreatureMovement : MonoBehaviour
     bool hasUmbrella = false;
     public bool climbingSlope = false;
 
+    public bool IsAlive { get; private set; } = true;
+
     Rigidbody2D creatureRigidbody;
     SceneManager sceneManager;
     public AudioClip hitGround;
+    protected Animator anim;
     //public BoxCollider2D GroundTrigger;
 
     // Start is called before the first frame update
@@ -24,13 +27,17 @@ public class CreatureMovement : MonoBehaviour
     {
         creatureRigidbody = GetComponent<Rigidbody2D>();
         sceneManager = FindObjectOfType<SceneManager>();
+        anim = transform.Find("model").GetComponent<Animator>();
 
         fallOrigin = transform.position;
+        anim.Play("Run");
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!IsAlive) { return; }
+
         if (isGrounded)
         {
             // Creature is walking
@@ -70,6 +77,7 @@ public class CreatureMovement : MonoBehaviour
 
     public void Fall()
     {
+        anim.Play("Jump");
         fallOrigin = transform.position;
         isGrounded = false;
     }
@@ -89,8 +97,10 @@ public class CreatureMovement : MonoBehaviour
             else if (Mathf.Abs(fallHeight) >= deadlyHeight)
             {
                 Die();
+                return;
             }
 
+            anim.Play("Run");
             isGrounded = true;
         }
     }
@@ -103,7 +113,10 @@ public class CreatureMovement : MonoBehaviour
 
     void Die()
     {
+        anim.Play("Die");
+        IsAlive = false;
         sceneManager.PlaySound(hitGround);
-        Destroy(gameObject);
+        sceneManager.CreatureDefeated();
+        //Destroy(gameObject, 2f);
     }
 }

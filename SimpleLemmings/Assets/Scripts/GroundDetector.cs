@@ -18,7 +18,7 @@ public class GroundDetector : MonoBehaviour
         if (other.CompareTag("ColliderTilemap") || other.CompareTag("Stairs"))
         {
             triggerCount++;
-            if (triggerCount == 1)
+            if (triggerCount == 1 && CreatureMovement.IsAlive)
                 CreatureMovement.Land();
         }
     }
@@ -28,7 +28,7 @@ public class GroundDetector : MonoBehaviour
         if (other.CompareTag("ColliderTilemap") || other.CompareTag("Stairs"))
         {
             triggerCount--;
-            if (triggerCount == 0)
+            if (triggerCount == 0 && CreatureMovement.IsAlive)
                 CreatureMovement.Fall();
         }
     }
