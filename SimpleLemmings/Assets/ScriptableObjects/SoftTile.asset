@@ -18,5 +18,8 @@ MonoBehaviour:
   selectable: 1
   destructable: 1
   damaging: 0
+  structural: 1
   demolishable: 0
   top: 0
+  highlight: 0
+  portal: 0

@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class SceneManager : MonoBehaviour
 {
+    public bool playerInput = true;
+
     [Header("Tilemaps")]
     public Tilemap map;
     public Tilemap mapDetail;
@@ -23,6 +25,7 @@ public class SceneManager : MonoBehaviour
     public GameObject UIBuildRStairs;
     public GameObject UIBuildLStairs;
     public GameObject UIDemolishBlock;
+    public GameObject UICross;
     public GameObject UIVictory;
     public GameObject UIDefeat;
 
@@ -35,6 +38,9 @@ public class SceneManager : MonoBehaviour
     public TileBase TileLStairs;
     public TileBase TileTop;
 
+    public int MapWidth { get; private set; } = 18;
+    public int MapHeight { get; private set; } = 10;
+
     TileBase selectedTile;
     Vector3Int selectedTilePos = Vector3Int.one;
 
@@ -42,6 +48,8 @@ public class SceneManager : MonoBehaviour
 
     Coroutine fadeSpriteCoroutine;
     bool interactingWithCell = false;
+
+    int maxActions = 6;
 
     AudioSource audioSource;
 
@@ -67,6 +75,8 @@ public class SceneManager : MonoBehaviour
 
     void Update()
     {
+        if (!playerInput) { return; }
+
         if (Input.GetKeyUp(KeyCode.R)) { ReloadScene(); }
 
         if (Input.GetMouseButton(0) && !interactingWithCell)
@@ -91,15 +101,7 @@ public class SceneManager : MonoBehaviour
         }
         else if (Input.GetMouseButtonUp(0) && interactingWithCell)
         {
-            // Remove any active buttons from screen
-            interactingWithCell = false;
-            CellSelection.SetActive(false);
-            UIBreakBlock.SetActive(false);
-            UIPlaceUmbrella.SetActive(false);
-            UIBuildRStairs.SetActive(false);
-            UIBuildLStairs.SetActive(false);
-            UIDemolishBlock.SetActive(false);
-            selectedTilePos = Vector3Int.one; // Reset selected tile pos
+            UnselectCell();
         }
     }
 
@@ -120,6 +122,14 @@ public class SceneManager : MonoBehaviour
 
     void TileClicked()
     {
+        if (!PlaceUIActions())
+        {
+            // Fade cell selection sprite if cell cannot be selected
+            fadeSpriteCoroutine = StartCoroutine(FadeSprite(CellSelection.GetComponent<SpriteRenderer>(), 0f, 0.5f));
+            selectedTilePos = Vector3Int.one; // Reset selected tile pos
+        }
+
+        /*
         // Case empty tile
         if (selectedTile == null)
         {
@@ -192,7 +202,176 @@ public class SceneManager : MonoBehaviour
             // Fade cell selection sprite if cell cannot be selected
             fadeSpriteCoroutine = StartCoroutine(FadeSprite(CellSelection.GetComponent<SpriteRenderer>(), 0f, 0.5f));
             selectedTilePos = Vector3Int.one; // Reset selected tile pos
+        }*/
+    }
+
+    public int GetTileActions(Vector3Int tilePos, out bool[] availableActions)
+    {
+        availableActions = new bool[maxActions];
+        int numActions = 0;
+
+        TileBase tile = map.GetTile(tilePos);
+        if (tile != null)
+        {
+            bool result = dataFromTiles.TryGetValue(tile, out TileData clickedTileData);
+            if (result && clickedTileData.destructable)
+            {
+                // 0 Break
+                availableActions[0] = true;
+                numActions++;
+            }
+
+            if (result && clickedTileData.demolishable)
+            {
+                // 4 Demolish Block
+                availableActions[4] = true;
+                numActions++;
+            }
+
+            if (result && clickedTileData.highlight)
+            {
+                // 5 Remove Umbrella
+                availableActions[5] = true;
+                numActions++;
+            }
         }
+        else
+        {
+            // If tile below is empty too (or has a non structural tile), an umbrella can be placed
+            Vector3Int tileBelowPos = tilePos + Vector3Int.down;
+            TileBase tileBelow = map.GetTile(tileBelowPos);
+            if (tileBelow == null)
+            {
+                // 1 Umbrella
+                availableActions[1] = true;
+                numActions++;
+            }
+            else
+            {
+                bool result = dataFromTiles.TryGetValue(tileBelow, out TileData clickedTileData);
+                if (result && !clickedTileData.structural)
+                {
+                    // 1 Umbrella
+                    availableActions[1] = true;
+                    numActions++;
+                }
+            }
+
+            // Check if tile above is empty too (or has a non structural tile)
+            bool noStructureAbove = false;
+            TileBase tileAbove = map.GetTile(tilePos + Vector3Int.up);
+            if (tileAbove == null) { noStructureAbove = true; }
+            else
+            {
+                bool result = dataFromTiles.TryGetValue(tileAbove, out TileData clickedTileData);
+                if (result && !clickedTileData.structural) { noStructureAbove = true; }
+            }
+
+            if (noStructureAbove)
+            {
+                // If there is a structural tile on the low left, a right stair can be placed
+                TileBase tileLeft = map.GetTile(tilePos + Vector3Int.left + Vector3Int.down);
+                if (tileLeft != null)
+                {
+                    bool result = dataFromTiles.TryGetValue(tileLeft, out TileData clickedTileData);
+                    if (result && (clickedTileData.structural || clickedTileData.demolishable))
+                    {
+                        // 2 R Stairs
+                        availableActions[2] = true;
+                        numActions++;
+                    }
+                }
+
+                // If there is a structural tile on the low right, a left stair can be placed
+                TileBase tileRight = map.GetTile(tilePos + Vector3Int.right + Vector3Int.down);
+                if (tileRight != null)
+                {
+                    bool result = dataFromTiles.TryGetValue(tileRight, out TileData clickedTileData);
+                    if (result && (clickedTileData.structural || clickedTileData.demolishable))
+                    {
+                        // 3 L Stairs
+                        availableActions[3] = true;
+                        numActions++;
+                    }
+                }
+            }
+        }
+
+        return numActions;
+    }
+
+    bool PlaceUIActions()
+    {
+        bool anyActionAvailable = false;
+
+        int numActions = GetTileActions(selectedTilePos, out bool[] availableActions);
+
+        if (numActions > 0)
+        {
+            anyActionAvailable = true;
+            interactingWithCell = true;
+
+            Vector3 worldPosition = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
+            if (selectedTilePos.y < MapHeight - 2)
+                worldPosition.y += map.cellSize.y * 1.5f; // Set position above the tile
+            else
+                worldPosition.y -= map.cellSize.y * 1.5f; // Set position below the tile if selecting a top tile
+
+            if (numActions > 2 && selectedTilePos.x <= 1) { } // If cell is at the far left and has > 2 actions, don't move
+            else if (numActions > 2 && selectedTilePos.x > MapWidth - 3) // If cell is at the far right and has > 2 actions
+                worldPosition.x -= map.cellSize.x * 1.1f * (numActions - 1); // Move a full cell's width + offset for every action available minus one
+            else
+                worldPosition.x -= map.cellSize.x / 2 * 1.1f * (numActions - 1); // Move half a cell's width + offset for every action available minus one
+
+            for (int i = 0; i < availableActions.Length; i++)
+            {
+                Vector3 screenPosition = Camera.main.WorldToScreenPoint(worldPosition); // Get position in screen coords
+                RectTransformUtility.ScreenPointToWorldPointInRectangle(FindObjectOfType<Canvas>().GetComponent<RectTransform>(), screenPosition,
+                    null, out Vector3 buttonPos); // Transform screen coords to point in the canvas
+
+                if (availableActions[i] == true)
+                {
+                    if (i == 0) // 0 Break
+                    {
+                        UIBreakBlock.SetActive(true);
+                        UIBreakBlock.GetComponent<RectTransform>().position = buttonPos;
+                        worldPosition.x += map.cellSize.x * 1.1f; // Move a cell's width to the right
+                    }
+                    else if (i == 1) // 1 Umbrella
+                    {
+                        UIPlaceUmbrella.SetActive(true);
+                        UIPlaceUmbrella.GetComponent<RectTransform>().position = buttonPos;
+                        worldPosition.x += map.cellSize.x * 1.1f; // Move a cell's width to the right
+                    }
+                    else if (i == 2) // 2 R Stairs
+                    {
+                        UIBuildRStairs.SetActive(true);
+                        UIBuildRStairs.GetComponent<RectTransform>().position = buttonPos;
+                        worldPosition.x += map.cellSize.x * 1.1f; // Move a cell's width to the right
+                    }
+                    else if (i == 3) // 3 L Stairs
+                    {
+                        UIBuildLStairs.SetActive(true);
+                        UIBuildLStairs.GetComponent<RectTransform>().position = buttonPos;
+                        worldPosition.x += map.cellSize.x * 1.1f; // Move a cell's width to the right
+                    }
+                    else if (i == 4) // 4 Demolish Stairs
+                    {
+                        UIDemolishBlock.SetActive(true);
+                        UIDemolishBlock.GetComponent<RectTransform>().position = buttonPos;
+                        worldPosition.x += map.cellSize.x * 1.1f; // Move a cell's width to the right
+                    }
+                    else if (i == 5) // 5 Remove Umbrella
+                    {
+                        UICross.SetActive(true);
+                        UICross.GetComponent<RectTransform>().position = buttonPos;
+                        worldPosition.x += map.cellSize.x * 1.1f; // Move a cell's width to the right
+                    }
+                }
+            }
+        }
+
+        return anyActionAvailable;
     }
 
     public bool CheckForDamagingTile(Vector3 position)
@@ -233,7 +412,7 @@ public class SceneManager : MonoBehaviour
         {
             bool result = dataFromTiles.TryGetValue(belowTile, out TileData belowTileData);
 
-            if (result && !belowTileData.damaging && !belowTileData.destructable)
+            if (result && belowTileData.structural)
                 mapDetail.SetTile(selectedTilePos, TileTop);
         }
 
@@ -284,12 +463,6 @@ public class SceneManager : MonoBehaviour
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
     }
 
-    public void PlaySound(AudioClip sound)
-    {
-        audioSource.clip = sound;
-        audioSource.Play();
-    }
-
     public void DemolishBlock()
     {
         map.SetTile(selectedTilePos, null);
@@ -297,8 +470,28 @@ public class SceneManager : MonoBehaviour
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
     }
 
+    public void PlaySound(AudioClip sound)
+    {
+        audioSource.clip = sound;
+        audioSource.Play();
+    }
 
-    public void ReloadScene()
+    void UnselectCell()
+    {
+        // Remove any active buttons from screen
+        interactingWithCell = false;
+        CellSelection.SetActive(false);
+        UIBreakBlock.SetActive(false);
+        UIPlaceUmbrella.SetActive(false);
+        UIBuildRStairs.SetActive(false);
+        UIBuildLStairs.SetActive(false);
+        UIDemolishBlock.SetActive(false);
+        UICross.SetActive(false);
+        selectedTilePos = Vector3Int.one; // Reset selected tile pos
+    }
+
+
+    void ReloadScene()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
     }
@@ -311,23 +504,27 @@ public class SceneManager : MonoBehaviour
     void Victory()
     {
         UIVictory.SetActive(true);
+        playerInput = false;
+        UnselectCell();
     }
 
     void Defeat()
     {
         UIDefeat.SetActive(true);
+        playerInput = false;
+        UnselectCell();
     }
 
     public void CreatureSaved()
     {
         // Just using 1 creature for now, so call Victory
-        Invoke("Victory", 1f);
+        Invoke(nameof(Victory), 1f);
     }
 
     public void CreatureDefeated()
     {
         // Just using 1 creature for now, so call Defeat
-        Invoke("Defeat", 1f);
+        Invoke(nameof(Defeat), 1f);
     }
 
 

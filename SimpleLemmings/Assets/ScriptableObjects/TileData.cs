@@ -17,6 +17,9 @@ public class TileData : ScriptableObject
     [Tooltip("Can the tile damage a creature?")]
     public bool damaging;
 
+    [Tooltip("Is the tile part of the level structure?")]
+    public bool structural;
+
     [Tooltip("Can the tile me demolished? Used for item tiles")]
     public bool demolishable;
 

@@ -6,7 +6,7 @@ using UnityEngine.Tilemaps;
 public class CreatureMovement : MonoBehaviour
 {
     public float movementSpeed = 1.0f;
-    public float fallingGravity = 3.0f;
+    public float fallingGravity = 12.0f;
     bool goingRight = true;
     bool isGrounded = false;
     readonly float deadlyHeight = 2.1f;
@@ -49,20 +49,24 @@ public class CreatureMovement : MonoBehaviour
             //float clampedSpeed = Mathf.Clamp(creatureRigidbody.velocity.x, -movementSpeed, movementSpeed);
             //creatureRigidbody.velocity = new Vector2(clampedSpeed, creatureRigidbody.velocity.y);
         }
-        else
+
+        if (sceneManager.CheckForDamagingTile(transform.position - new Vector3(0f, 1f, 0f)))
+        {
+            Die();
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (!isGrounded)
         {
             // Creature is falling
             creatureRigidbody.AddForce(Vector3.down * fallingGravity); // Push down
             if (hasUmbrella) // Cap max Y velocity if creature has an umbrella
             {
                 float clampedSpeed = Mathf.Clamp(creatureRigidbody.velocity.y, -movementSpeed, movementSpeed);
-                creatureRigidbody.velocity = new Vector2(creatureRigidbody.velocity.x, clampedSpeed);
+                creatureRigidbody.velocity = new Vector2(0f, clampedSpeed);
             }
-        }
-
-        if (sceneManager.CheckForDamagingTile(transform.position - new Vector3(0f, 1f, 0f)))
-        {
-            Die();
         }
     }
 
