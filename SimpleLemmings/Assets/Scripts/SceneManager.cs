@@ -31,6 +31,8 @@ public class SceneManager : MonoBehaviour
 
     [Space]
     public GameObject PrefabUmbrella;
+    public GameObject PrefabRStairs;
+    public GameObject PrefabLStairs;
 
     [Header("Tiles")]
     public TileBase TileHighlight;
@@ -45,6 +47,7 @@ public class SceneManager : MonoBehaviour
     Vector3Int selectedTilePos = Vector3Int.one;
 
     Dictionary<Vector3Int, GameObject> placedUmbrellas;
+    Dictionary<Vector3Int, GameObject> placedStairs;
 
     Coroutine fadeSpriteCoroutine;
     bool interactingWithCell = false;
@@ -71,6 +74,7 @@ public class SceneManager : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
         placedUmbrellas = new Dictionary<Vector3Int, GameObject>();
+        placedStairs = new Dictionary<Vector3Int, GameObject>();
     }
 
     void Update()
@@ -446,8 +450,9 @@ public class SceneManager : MonoBehaviour
 
     public void BuildRStairs()
     {
-        //Vector3 cellWorldPos = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
-        //Instantiate(PrefabStairs, cellWorldPos, Quaternion.identity);
+        Vector3 cellWorldPos = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
+        GameObject stairs = Instantiate(PrefabRStairs, cellWorldPos, Quaternion.identity);
+        placedStairs.Add(selectedTilePos, stairs);
         map.SetTile(selectedTilePos, TileRStairs);
         CellSelection.SetActive(false);
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
@@ -455,8 +460,9 @@ public class SceneManager : MonoBehaviour
 
     public void BuildLStairs()
     {
-        //Vector3 cellWorldPos = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
-        //GameObject stairs = Instantiate(PrefabStairs, cellWorldPos, Quaternion.identity);
+        Vector3 cellWorldPos = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
+        GameObject stairs = Instantiate(PrefabLStairs, cellWorldPos, Quaternion.identity);
+        placedStairs.Add(selectedTilePos, stairs);
         //stairs.transform.localScale = new Vector3(-1f, 1f, 1f);
         map.SetTile(selectedTilePos, TileLStairs);
         CellSelection.SetActive(false);
@@ -466,6 +472,13 @@ public class SceneManager : MonoBehaviour
     public void DemolishBlock()
     {
         map.SetTile(selectedTilePos, null);
+        // Remove stairs
+        placedStairs.TryGetValue(selectedTilePos, out GameObject stairs);
+        if (stairs)
+        {
+            Destroy(stairs);
+            placedStairs.Remove(selectedTilePos);
+        }
         CellSelection.SetActive(false);
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
     }

@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ee72d2690dfa6441b801102331b2721, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerInput: 1
   map: {fileID: 0}
   mapDetail: {fileID: 0}
   tileDatas:
@@ -59,7 +60,14 @@ MonoBehaviour:
   UIBuildRStairs: {fileID: 0}
   UIBuildLStairs: {fileID: 0}
   UIDemolishBlock: {fileID: 0}
+  UICross: {fileID: 0}
+  UIVictory: {fileID: 0}
+  UIDefeat: {fileID: 0}
   PrefabUmbrella: {fileID: 5671326996774249044, guid: 84baaa1afbcf96349884f542eb4f8264,
+    type: 3}
+  PrefabRStairs: {fileID: 2722279349233242108, guid: 294065f97923d3a4d9623ef07863543c,
+    type: 3}
+  PrefabLStairs: {fileID: 2722279349233242108, guid: 57d3f6c2ab571f448928ba4ba111cb90,
     type: 3}
   TileHighlight: {fileID: 11400000, guid: dc5c9c50779cd8f4c9624ffff6a5391c, type: 2}
   TileRStairs: {fileID: 11400000, guid: 45dd27634bffc43469fc840334b82525, type: 2}

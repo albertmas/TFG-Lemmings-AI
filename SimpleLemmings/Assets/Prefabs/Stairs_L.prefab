@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 2722279349233242099}
   - component: {fileID: 2722279349233242098}
   - component: {fileID: 2722279349233242109}
-  - component: {fileID: 395341948887851494}
+  - component: {fileID: 6620979054495661835}
   m_Layer: 0
-  m_Name: Stairs_R
+  m_Name: Stairs_L
   m_TagString: Stairs
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -72,7 +72,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: bd6918fdd45356b44ae1c103e3a0b2d2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ad5fce95aa60fbc4aa1b53c18cc027d6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -108,11 +108,11 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.5, y: -0.5}
-      - {x: -0.4, y: -0.5}
-      - {x: 0.5, y: 0.4}
-      - {x: 0.5, y: 0.5}
---- !u!251 &395341948887851494
+    - - {x: -0.5, y: 0.4}
+      - {x: 0.4, y: -0.5}
+      - {x: 0.5, y: -0.5}
+      - {x: -0.5, y: 0.5}
+--- !u!251 &6620979054495661835
 PlatformEffector2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -124,7 +124,7 @@ PlatformEffector2D:
   m_ColliderMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_RotationalOffset: 45
+  m_RotationalOffset: -45
   m_UseOneWay: 1
   m_UseOneWayGrouping: 0
   m_SurfaceArc: 180
