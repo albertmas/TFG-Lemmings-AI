@@ -8,6 +8,7 @@ TagManager:
   - ColliderTilemap
   - Stairs
   - Portal
+  - Checkpoint
   layers:
   - Default
   - TransparentFX

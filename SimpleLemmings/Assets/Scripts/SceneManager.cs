@@ -40,11 +40,15 @@ public class SceneManager : MonoBehaviour
     public TileBase TileLStairs;
     public TileBase TileTop;
 
+    [Space]
+    public LemmingsAgent AIAgent;
+
     public int MapWidth { get; private set; } = 18;
     public int MapHeight { get; private set; } = 10;
 
     TileBase selectedTile;
-    Vector3Int selectedTilePos = Vector3Int.one;
+    [HideInInspector]
+    public Vector3Int selectedTilePos = Vector3Int.one;
 
     Dictionary<Vector3Int, GameObject> placedUmbrellas;
     Dictionary<Vector3Int, GameObject> placedStairs;
@@ -52,7 +56,7 @@ public class SceneManager : MonoBehaviour
     Coroutine fadeSpriteCoroutine;
     bool interactingWithCell = false;
 
-    int maxActions = 6;
+    public int MaxActions { get; private set; } = 6;
 
     AudioSource audioSource;
 
@@ -211,7 +215,7 @@ public class SceneManager : MonoBehaviour
 
     public int GetTileActions(Vector3Int tilePos, out bool[] availableActions)
     {
-        availableActions = new bool[maxActions];
+        availableActions = new bool[MaxActions];
         int numActions = 0;
 
         TileBase tile = map.GetTile(tilePos);
@@ -503,6 +507,41 @@ public class SceneManager : MonoBehaviour
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
     }
 
+    /// <summary>
+    /// Encode a tile using One-Hot Encoding
+    /// </summary>
+    /// <param name="tilePos"> Tile to encode </param>
+    /// <returns></returns>
+    public int[] EncodeTile(Vector3Int tilePos)
+    {
+        int[] code = new int[8] { 0, 0, 0, 0, 0, 0, 0, 0 };
+
+        TileBase tile = map.GetTile(tilePos);
+
+        if (tile == null) { code[0] = 1; } // Empty tile
+        else
+        {
+            if (dataFromTiles.TryGetValue(tile, out TileData tileData))
+            {
+                if (tileData.structural && !tileData.destructable) { code[1] = 1; } // Hard Tile
+                else if (tileData.structural && tileData.destructable) { code[2] = 1; } // Soft Tile
+                else if (tileData.damaging) { code[3] = 1; } // Damaging Tile
+                else if (tileData.portal) { code[4] = 1; } // Portal Tile
+                else if (tileData.highlight) { code[5] = 1; } // Umbrella Tile
+                else if (tileData.demolishable)
+                {
+                    if (placedStairs.TryGetValue(tilePos, out GameObject stairs))
+                    {
+                        string name = stairs.GetComponent<SpriteRenderer>().sprite.name;
+                        if (name.Equals("Stairs Right")) { code[6] = 1; } // Stairs Right Tile
+                        else if (name.Equals("Stairs Left")) { code[7] = 1; } // Stairs Left Tile
+                    }
+                }
+            }
+        }
+        return code;
+    }
+
 
     void ReloadScene()
     {
@@ -530,14 +569,24 @@ public class SceneManager : MonoBehaviour
 
     public void CreatureSaved()
     {
+        if (AIAgent)
+            AIAgent.LemmingSaved();
         // Just using 1 creature for now, so call Victory
         Invoke(nameof(Victory), 1f);
     }
 
     public void CreatureDefeated()
     {
+        if (AIAgent)
+            AIAgent.LemmingKilled();
         // Just using 1 creature for now, so call Defeat
         Invoke(nameof(Defeat), 1f);
+    }
+
+    public void CheckpointReached()
+    {
+        if (AIAgent)
+            AIAgent.LemmingCheckpoint();
     }
 
 
