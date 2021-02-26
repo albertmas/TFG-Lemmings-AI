@@ -43,6 +43,9 @@ public class SceneManager : MonoBehaviour
     [Space]
     public LemmingsAgent AIAgent;
 
+    GameObject creature;
+    SpawnCreatures spawner;
+
     public int MapWidth { get; private set; } = 18;
     public int MapHeight { get; private set; } = 10;
 
@@ -79,13 +82,15 @@ public class SceneManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         placedUmbrellas = new Dictionary<Vector3Int, GameObject>();
         placedStairs = new Dictionary<Vector3Int, GameObject>();
+        spawner = GameObject.FindGameObjectWithTag("Spawner").GetComponent<SpawnCreatures>();
+        creature = spawner.SpawnCreature();
     }
 
     void Update()
     {
         if (!playerInput) { return; }
 
-        if (Input.GetKeyUp(KeyCode.R)) { ReloadScene(); }
+        if (Input.GetKeyUp(KeyCode.R)) { RestartLevel(); }
 
         if (Input.GetMouseButton(0) && !interactingWithCell)
         {
@@ -572,7 +577,8 @@ public class SceneManager : MonoBehaviour
         if (AIAgent)
             AIAgent.LemmingSaved();
         // Just using 1 creature for now, so call Victory
-        Invoke(nameof(Victory), 1f);
+        if (playerInput)
+            Invoke(nameof(Victory), 1f);
     }
 
     public void CreatureDefeated()
@@ -580,13 +586,79 @@ public class SceneManager : MonoBehaviour
         if (AIAgent)
             AIAgent.LemmingKilled();
         // Just using 1 creature for now, so call Defeat
-        Invoke(nameof(Defeat), 1f);
+        if (playerInput)
+            Invoke(nameof(Defeat), 1f);
     }
 
     public void CheckpointReached()
     {
         if (AIAgent)
             AIAgent.LemmingCheckpoint();
+    }
+
+    public Vector2Int GetLemmingPos()
+    {
+        Vector2Int pos = Vector2Int.zero;
+        if (!creature) { creature = GameObject.FindGameObjectWithTag("Creature"); }
+        if (creature) { pos = (Vector2Int)map.WorldToCell(creature.transform.position); }
+        return pos;
+    }
+
+
+    public void RestartLevel()
+    {
+        UnselectCell();
+
+        // Reset the map
+        CopyTilemap(map, Resources.Load<Tilemap>("Tilemaps/Level 1"));
+        CopyTilemap(mapDetail, Resources.Load<Tilemap>("Tilemaps/Level 1 Details"));
+
+        // Respawn the creature
+        Destroy(creature);
+        creature = spawner.SpawnCreature();
+
+        // Remove umbrellas and stairs
+        if (placedUmbrellas.Count > 0)
+        {
+            foreach (KeyValuePair<Vector3Int, GameObject> entry in placedUmbrellas)
+            {
+                Destroy(entry.Value);
+            }
+        }
+        if (placedStairs.Count > 0)
+        {
+            foreach (KeyValuePair<Vector3Int, GameObject> entry in placedStairs)
+            {
+                Destroy(entry.Value);
+            }
+        }
+        placedUmbrellas.Clear();
+        placedStairs.Clear();
+
+        // Reset checkpoints
+        GameObject[] checkpoints = GameObject.FindGameObjectsWithTag("Checkpoint");
+        foreach (GameObject point in checkpoints)
+        {
+            point.GetComponent<Checkpoint>().ResetPoint();
+        }
+    }
+
+    void CopyTilemap(Tilemap destiny, Tilemap original)
+    {
+        destiny.ClearAllTiles();
+        BoundsInt bounds = original.cellBounds;
+        TileBase[] allTiles = original.GetTilesBlock(bounds);
+        for (int x = 0; x < bounds.size.x; x++)
+        {
+            for (int y = 0; y < bounds.size.y; y++)
+            {
+                TileBase tile = allTiles[x + y * bounds.size.x];
+                if (tile != null)
+                {
+                    destiny.SetTile(new Vector3Int(x + bounds.x, y + bounds.y, 0), tile);
+                }
+            }
+        }
     }
 
 

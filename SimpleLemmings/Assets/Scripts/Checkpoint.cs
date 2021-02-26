@@ -4,12 +4,27 @@ using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
 {
+    bool activated = false;
+    SpriteRenderer sprite;
+
+    private void Start()
+    {
+        sprite = GetComponent<SpriteRenderer>();
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Creature"))
+        if (!activated && other.CompareTag("Creature"))
         {
-            Destroy(gameObject);
+            activated = true;
+            sprite.color = Color.gray;
             GameObject.Find("SceneManager").GetComponent<SceneManager>().CheckpointReached();
         }
+    }
+
+    public void ResetPoint()
+    {
+        activated = false;
+        sprite.color = Color.white;
     }
 }

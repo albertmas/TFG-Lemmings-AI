@@ -9,6 +9,7 @@ TagManager:
   - Stairs
   - Portal
   - Checkpoint
+  - Spawner
   layers:
   - Default
   - TransparentFX

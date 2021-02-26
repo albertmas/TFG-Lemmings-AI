@@ -14,8 +14,8 @@ public class LemmingsAgent : Agent
     [Tooltip("Whether this is training mode or gameplay mode")]
     public bool trainingMode;
 
-    public SceneManager sceneManager;
-    public GameObject lemming;
+    [SerializeField]
+    SceneManager sceneManager;
 
     /// <summary>
     /// Initialize the agent
@@ -23,7 +23,8 @@ public class LemmingsAgent : Agent
     public override void Initialize()
     {
         // If not training mode, no max step, play forever
-        if (!trainingMode) MaxStep = 0;
+        if (!trainingMode) { MaxStep = 0; }
+        else { sceneManager.playerInput = false; }
     }
 
     /// <summary>
@@ -32,6 +33,7 @@ public class LemmingsAgent : Agent
     public override void OnEpisodeBegin()
     {
         // Reset agent, scene and Lemmings
+        sceneManager.RestartLevel();
     }
 
     /// <summary>
@@ -78,15 +80,8 @@ public class LemmingsAgent : Agent
     /// <param name="sensor">The vector sensor</param>
     public override void CollectObservations(VectorSensor sensor)
     {
-        // If lemming is null, observe an empty array and return
-        if (lemming == null)
-        {
-            sensor.AddObservation(new float[2]);
-            return;
-        }
-
         // Observe the lemming position
-        sensor.AddObservation((Vector2Int)sceneManager.map.WorldToCell(lemming.transform.position));
+        sensor.AddObservation(sceneManager.GetLemmingPos());
 
         // Observe the tilemap
         for (int h = 0; h < sceneManager.MapHeight; h++)
@@ -136,18 +131,27 @@ public class LemmingsAgent : Agent
         }
     }
 
+    /// <summary>
+    /// Reward the agent for every saved Lemming
+    /// </summary>
     public void LemmingSaved()
     {
         if (trainingMode)
             AddReward(1f);
     }
 
+    /// <summary>
+    /// Punish the agent if a Lemming dies
+    /// </summary>
     public void LemmingKilled()
     {
         if (trainingMode)
             AddReward(-1f);
     }
 
+    /// <summary>
+    /// Slightly reward the agent when reaching a checkpoint
+    /// </summary>
     public void LemmingCheckpoint()
     {
         if (trainingMode)
