@@ -118,8 +118,8 @@ public class CreatureMovement : MonoBehaviour
     {
         anim.Play("Die");
         IsAlive = false;
+        //creatureRigidbody.velocity = Vector3.zero;
         sceneManager.PlaySound(hitGround);
         sceneManager.CreatureDefeated();
-        //Destroy(gameObject, 2f);
     }
 }

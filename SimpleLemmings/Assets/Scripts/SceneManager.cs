@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class SceneManager : MonoBehaviour
 {
     [Header("Game Settings")]
-    [Range(1, 3)]
+    [Range(1, 5)]
     public int gameSpeed = 1;
     public bool playerInput = true;
     public bool agentPlaying = false;
@@ -88,6 +88,7 @@ public class SceneManager : MonoBehaviour
         placedStairs = new Dictionary<Vector3Int, GameObject>();
         spawner = GameObject.FindGameObjectWithTag("Spawner").GetComponent<SpawnCreatures>();
         creature = spawner.SpawnCreature();
+        Time.timeScale = gameSpeed;
     }
 
     void Update()
