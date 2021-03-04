@@ -7,7 +7,11 @@ using UnityEngine.UI;
 
 public class SceneManager : MonoBehaviour
 {
+    [Header("Game Settings")]
+    [Range(1, 3)]
+    public int gameSpeed = 1;
     public bool playerInput = true;
+    public bool agentPlaying = false;
 
     [Header("Tilemaps")]
     public Tilemap map;
@@ -46,8 +50,8 @@ public class SceneManager : MonoBehaviour
     GameObject creature;
     SpawnCreatures spawner;
 
-    public int MapWidth { get; private set; } = 18;
-    public int MapHeight { get; private set; } = 10;
+    public int MapWidth { get; private set; } = 16;
+    public int MapHeight { get; private set; } = 8;
 
     TileBase selectedTile;
     [HideInInspector]
@@ -141,81 +145,6 @@ public class SceneManager : MonoBehaviour
             fadeSpriteCoroutine = StartCoroutine(FadeSprite(CellSelection.GetComponent<SpriteRenderer>(), 0f, 0.5f));
             selectedTilePos = Vector3Int.one; // Reset selected tile pos
         }
-
-        /*
-        // Case empty tile
-        if (selectedTile == null)
-        {
-            // Option to place umbrella if tile below is empty too
-            if (true)
-            {
-                Vector3 worldPosition = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
-                worldPosition.y += map.cellSize.y * 1.5f; // Set position on top of the tile
-                Vector3 screenPosition = Camera.main.WorldToScreenPoint(worldPosition); // Get position in screen coords
-                RectTransformUtility.ScreenPointToWorldPointInRectangle(FindObjectOfType<Canvas>().GetComponent<RectTransform>(), screenPosition,
-                    null, out Vector3 buttonPos); // Transform screen coords to point in the canvas
-                UIPlaceUmbrella.SetActive(true);
-                UIPlaceUmbrella.GetComponent<RectTransform>().position = buttonPos;
-
-                worldPosition.x -= map.cellSize.x * 1.1f;
-                screenPosition = Camera.main.WorldToScreenPoint(worldPosition); // Get position in screen coords
-                RectTransformUtility.ScreenPointToWorldPointInRectangle(FindObjectOfType<Canvas>().GetComponent<RectTransform>(), screenPosition,
-                    null, out buttonPos); // Transform screen coords to point in the canvas
-                UIBuildRStairs.SetActive(true);
-                UIBuildRStairs.GetComponent<RectTransform>().position = buttonPos;
-
-                worldPosition.x += map.cellSize.x * 2.2f;
-                screenPosition = Camera.main.WorldToScreenPoint(worldPosition); // Get position in screen coords
-                RectTransformUtility.ScreenPointToWorldPointInRectangle(FindObjectOfType<Canvas>().GetComponent<RectTransform>(), screenPosition,
-                    null, out buttonPos); // Transform screen coords to point in the canvas
-                UIBuildLStairs.SetActive(true);
-                UIBuildLStairs.GetComponent<RectTransform>().position = buttonPos;
-
-                interactingWithCell = true;
-            }
-            // Option to build stairs if tile below is ground or continuing other stairs
-            // Option to place STOP if tile below is ground
-            return;
-        }
-
-        bool result = dataFromTiles.TryGetValue(selectedTile, out TileData clickedTileData);
-        if (result && clickedTileData.selectable)
-        {
-            if (clickedTileData.destructable)
-            {
-                Vector3 worldPosition = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
-                worldPosition.y += map.cellSize.y * 1.5f; // Set position on top of the tile
-                Vector3 screenPosition = Camera.main.WorldToScreenPoint(worldPosition); // Get position in screen coords
-                RectTransformUtility.ScreenPointToWorldPointInRectangle(FindObjectOfType<Canvas>().GetComponent<RectTransform>(), screenPosition,
-                    null, out Vector3 buttonPos); // Transform screen coords to point in the canvas
-                UIBreakBlock.SetActive(true);
-                UIBreakBlock.GetComponent<RectTransform>().position = buttonPos;
-
-                interactingWithCell = true;
-            }
-            if (clickedTileData.demolishable)
-            {
-                Vector3 worldPosition = map.CellToWorld(selectedTilePos) + map.cellSize / 2; // Get tile center position
-                worldPosition.y += map.cellSize.y * 1.5f; // Set position on top of the tile
-                Vector3 screenPosition = Camera.main.WorldToScreenPoint(worldPosition); // Get position in screen coords
-                RectTransformUtility.ScreenPointToWorldPointInRectangle(FindObjectOfType<Canvas>().GetComponent<RectTransform>(), screenPosition,
-                    null, out Vector3 buttonPos); // Transform screen coords to point in the canvas
-                UIDemolishBlock.SetActive(true);
-                UIDemolishBlock.GetComponent<RectTransform>().position = buttonPos;
-
-                interactingWithCell = true;
-            }
-            if (clickedTileData.highlight)
-            {
-                RemoveUmbrella();
-            }
-        }
-        else
-        {
-            // Fade cell selection sprite if cell cannot be selected
-            fadeSpriteCoroutine = StartCoroutine(FadeSprite(CellSelection.GetComponent<SpriteRenderer>(), 0f, 0.5f));
-            selectedTilePos = Vector3Int.one; // Reset selected tile pos
-        }*/
     }
 
     public int GetTileActions(Vector3Int tilePos, out bool[] availableActions)
@@ -574,20 +503,20 @@ public class SceneManager : MonoBehaviour
 
     public void CreatureSaved()
     {
-        if (AIAgent)
-            AIAgent.LemmingSaved();
         // Just using 1 creature for now, so call Victory
-        if (playerInput)
+        if (!agentPlaying)
             Invoke(nameof(Victory), 1f);
+        else if (AIAgent)
+            AIAgent.LemmingSaved();
     }
 
     public void CreatureDefeated()
     {
-        if (AIAgent)
-            AIAgent.LemmingKilled();
         // Just using 1 creature for now, so call Defeat
-        if (playerInput)
+        if (!agentPlaying)
             Invoke(nameof(Defeat), 1f);
+        else if (AIAgent)
+            AIAgent.LemmingKilled();
     }
 
     public void CheckpointReached()
@@ -655,7 +584,7 @@ public class SceneManager : MonoBehaviour
                 TileBase tile = allTiles[x + y * bounds.size.x];
                 if (tile != null)
                 {
-                    destiny.SetTile(new Vector3Int(x + bounds.x, y + bounds.y, 0), tile);
+                    destiny.SetTile(new Vector3Int(x + bounds.x - 1, y + bounds.y - 1, 0), tile);
                 }
             }
         }

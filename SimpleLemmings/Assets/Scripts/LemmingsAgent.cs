@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Policies;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -23,8 +24,18 @@ public class LemmingsAgent : Agent
     public override void Initialize()
     {
         // If not training mode, no max step, play forever
-        if (!trainingMode) { MaxStep = 0; }
-        else { sceneManager.playerInput = false; }
+        if (!trainingMode)
+        {
+            MaxStep = 0;
+            sceneManager.playerInput = false;
+        }
+
+        // Agent is playing the game
+        sceneManager.agentPlaying = true;
+
+        // If BehaviourType is not Heuristic, cancel player input
+        if (GetComponent<BehaviorParameters>().BehaviorType != BehaviorType.HeuristicOnly)
+            sceneManager.playerInput = false;
     }
 
     /// <summary>
@@ -40,6 +51,7 @@ public class LemmingsAgent : Agent
     /// Called when actions are received from either the player input or the neural network
     /// The agent will send one action per cell
     /// 0 Nothing - 1 Break - 2 Umbrella - 3 R Stairs - 4 L Stairs - 5 Demolish Stairs - 6 Remove Umbrella
+    /// 128 Branches with 7 possible actions
     /// </summary>
     /// <param name="actions">Buffer of actions received</param>
     public override void OnActionReceived(ActionBuffers actions)
@@ -48,9 +60,9 @@ public class LemmingsAgent : Agent
 
         int actionNum = 0;
 
-        for (int h = 0; h < sceneManager.MapHeight; h++)
+        for (int h = 0; h < sceneManager.MapHeight; h++) // 8 Tiles High
         {
-            for (int w = 0; w < sceneManager.MapWidth; w++)
+            for (int w = 0; w < sceneManager.MapWidth; w++) // 16 Tiles Wide
             {
                 if (agentActions[actionNum] != 0 && agentActions[actionNum] <= sceneManager.MaxActions + 1)
                 {
@@ -76,20 +88,21 @@ public class LemmingsAgent : Agent
 
     /// <summary>
     /// Collect information from the environment
+    /// 1026 Total Observations
     /// </summary>
     /// <param name="sensor">The vector sensor</param>
     public override void CollectObservations(VectorSensor sensor)
     {
         // Observe the lemming position
-        sensor.AddObservation(sceneManager.GetLemmingPos());
+        sensor.AddObservation(sceneManager.GetLemmingPos()); // 2 Observations
 
         // Observe the tilemap
-        for (int h = 0; h < sceneManager.MapHeight; h++)
+        for (int h = 0; h < sceneManager.MapHeight; h++) // 8 Tiles High
         {
-            for (int w = 0; w < sceneManager.MapWidth; w++)
+            for (int w = 0; w < sceneManager.MapWidth; w++) // 16 Tiles Wide
             {
                 // Encode tile
-                int[] tileCode = sceneManager.EncodeTile(new Vector3Int(w, h, 0));
+                int[] tileCode = sceneManager.EncodeTile(new Vector3Int(w, h, 0)); // 8 Digit Code
 
                 // Send each value of the code as an observation
                 for (int i = 0; i < tileCode.Length; i++)
@@ -97,6 +110,7 @@ public class LemmingsAgent : Agent
                     sensor.AddObservation(tileCode[i]);
                 }
             }
+            // 1024 Observations
         }
     }
 
@@ -131,6 +145,35 @@ public class LemmingsAgent : Agent
         }
     }
 
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        Vector3Int selected = sceneManager.selectedTilePos;
+        int actionNum = 0;
+
+        for (int h = 0; h < sceneManager.MapHeight; h++) // 8 Tiles High
+        {
+            for (int w = 0; w < sceneManager.MapWidth; w++) // 16 Tiles Wide
+            {
+                if (selected.x == w && selected.y == h && selected.z == 0)
+                {
+                    if (Input.GetKey(KeyCode.Alpha1) || Input.GetKey(KeyCode.Keypad1)) { actionsOut.DiscreteActions.Array[actionNum] = 1; }
+                    else if (Input.GetKey(KeyCode.Alpha2) || Input.GetKey(KeyCode.Keypad2)) { actionsOut.DiscreteActions.Array[actionNum] = 2; }
+                    else if (Input.GetKey(KeyCode.Alpha3) || Input.GetKey(KeyCode.Keypad3)) { actionsOut.DiscreteActions.Array[actionNum] = 3; }
+                    else if (Input.GetKey(KeyCode.Alpha4) || Input.GetKey(KeyCode.Keypad4)) { actionsOut.DiscreteActions.Array[actionNum] = 4; }
+                    else if (Input.GetKey(KeyCode.Alpha5) || Input.GetKey(KeyCode.Keypad5)) { actionsOut.DiscreteActions.Array[actionNum] = 5; }
+                    else if (Input.GetKey(KeyCode.Alpha6) || Input.GetKey(KeyCode.Keypad6)) { actionsOut.DiscreteActions.Array[actionNum] = 6; }
+                    else { actionsOut.DiscreteActions.Array[actionNum] = 0; }
+                }
+                else
+                {
+                    actionsOut.DiscreteActions.Array[actionNum] = 0;
+                }
+
+                actionNum++;
+            }
+        }
+    }
+
     /// <summary>
     /// Reward the agent for every saved Lemming
     /// </summary>
@@ -138,6 +181,9 @@ public class LemmingsAgent : Agent
     {
         if (trainingMode)
             AddReward(1f);
+
+        // We only have 1 Lemming, so call end episode
+        EndEpisode();
     }
 
     /// <summary>
@@ -147,6 +193,9 @@ public class LemmingsAgent : Agent
     {
         if (trainingMode)
             AddReward(-1f);
+
+        // We only have 1 Lemming, so call end episode
+        EndEpisode();
     }
 
     /// <summary>

@@ -20,7 +20,6 @@ public class CreatureMovement : MonoBehaviour
     SceneManager sceneManager;
     public AudioClip hitGround;
     protected Animator anim;
-    //public BoxCollider2D GroundTrigger;
 
     // Start is called before the first frame update
     void Start()
