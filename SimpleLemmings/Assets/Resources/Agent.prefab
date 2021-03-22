@@ -78,7 +78,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 1000
   trainingMode: 1
   sceneManager: {fileID: 0}
 --- !u!114 &9105431319929641453
@@ -93,5 +93,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DecisionPeriod: 5
+  DecisionPeriod: 20
   TakeActionsBetweenDecisions: 0

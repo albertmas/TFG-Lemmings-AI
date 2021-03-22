@@ -64,13 +64,17 @@ public class LemmingsAgent : Agent
         {
             for (int w = 0; w < sceneManager.MapWidth; w++) // 16 Tiles Wide
             {
-                if (agentActions[actionNum] != 0 && agentActions[actionNum] <= sceneManager.MaxActions + 1)
+                if (agentActions[actionNum] != 0 && agentActions[actionNum] <= sceneManager.TotalActions + 1)
                 {
                     Vector3Int tilePos = new Vector3Int(w, h, 0);
                     sceneManager.GetTileActions(tilePos, out bool[] allowedActions);
                     // Check that the intended action is allowed
                     if (allowedActions[agentActions[actionNum] - 1] == true)
                     {
+                        // If there are no actions left penalize the agent
+                        if (!sceneManager.RequestAction())
+                            AddReward(-0.05f);
+
                         sceneManager.selectedTilePos = tilePos;
                         if (agentActions[actionNum] == 1) { sceneManager.BreakBlock(); }
                         else if (agentActions[actionNum] == 2) { sceneManager.PlaceUmbrella(); }
@@ -78,6 +82,7 @@ public class LemmingsAgent : Agent
                         else if (agentActions[actionNum] == 4) { sceneManager.BuildLStairs(); }
                         else if (agentActions[actionNum] == 5) { sceneManager.DemolishBlock(); }
                         else if (agentActions[actionNum] == 6) { sceneManager.RemoveUmbrella(); }
+                        else { Debug.LogWarning("Unknown action requested by agent"); }
                     }
                 }
 

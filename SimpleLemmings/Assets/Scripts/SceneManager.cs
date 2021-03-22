@@ -9,7 +9,11 @@ public class SceneManager : MonoBehaviour
 {
     [Header("Game Settings")]
     [Range(1, 5)]
+    public int currentMap = 1;
+    [Range(1, 5)]
     public int gameSpeed = 1;
+    [Range(1, 30), Tooltip("Max actions per level.")]
+    public int maxActions = 20;
     public bool playerInput = true;
     public bool agentPlaying = false;
 
@@ -63,7 +67,9 @@ public class SceneManager : MonoBehaviour
     Coroutine fadeSpriteCoroutine;
     bool interactingWithCell = false;
 
-    public int MaxActions { get; private set; } = 6;
+    // Total amount of different actions
+    public int TotalActions { get; private set; } = 6;
+    int actionsCount = 0; // Number of actions done
 
     AudioSource audioSource;
 
@@ -150,7 +156,7 @@ public class SceneManager : MonoBehaviour
 
     public int GetTileActions(Vector3Int tilePos, out bool[] availableActions)
     {
-        availableActions = new bool[MaxActions];
+        availableActions = new bool[TotalActions];
         int numActions = 0;
 
         TileBase tile = map.GetTile(tilePos);
@@ -361,6 +367,7 @@ public class SceneManager : MonoBehaviour
 
         CellSelection.SetActive(false);
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
+        actionsCount++;
     }
 
     public void PlaceUmbrella()
@@ -371,6 +378,7 @@ public class SceneManager : MonoBehaviour
         placedUmbrellas.Add(selectedTilePos, umbrella);
         CellSelection.SetActive(false);
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
+        actionsCount++;
     }
 
     public void RemoveUmbrella()
@@ -385,6 +393,7 @@ public class SceneManager : MonoBehaviour
         }
         CellSelection.SetActive(false);
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
+        actionsCount++;
     }
 
     public void BuildRStairs()
@@ -395,6 +404,7 @@ public class SceneManager : MonoBehaviour
         map.SetTile(selectedTilePos, TileRStairs);
         CellSelection.SetActive(false);
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
+        actionsCount++;
     }
 
     public void BuildLStairs()
@@ -406,6 +416,7 @@ public class SceneManager : MonoBehaviour
         map.SetTile(selectedTilePos, TileLStairs);
         CellSelection.SetActive(false);
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
+        actionsCount++;
     }
 
     public void DemolishBlock()
@@ -420,6 +431,12 @@ public class SceneManager : MonoBehaviour
         }
         CellSelection.SetActive(false);
         selectedTilePos = Vector3Int.one; // Reset selected tile pos
+        actionsCount++;
+    }
+
+    public bool RequestAction()
+    {
+        return actionsCount < maxActions;
     }
 
     public void PlaySound(AudioClip sound)
@@ -538,10 +555,14 @@ public class SceneManager : MonoBehaviour
     public void RestartLevel()
     {
         UnselectCell();
+        actionsCount = 0;
 
         // Reset the map
-        CopyTilemap(map, Resources.Load<Tilemap>("Tilemaps/Level 1"));
-        CopyTilemap(mapDetail, Resources.Load<Tilemap>("Tilemaps/Level 1 Details"));
+        string mapPath = "Tilemaps/Level ";
+        mapPath += currentMap;
+        CopyTilemap(map, Resources.Load<Tilemap>(mapPath));
+        mapPath += " Details";
+        CopyTilemap(mapDetail, Resources.Load<Tilemap>(mapPath));
 
         // Respawn the creature
         Destroy(creature);
@@ -585,7 +606,7 @@ public class SceneManager : MonoBehaviour
                 TileBase tile = allTiles[x + y * bounds.size.x];
                 if (tile != null)
                 {
-                    destiny.SetTile(new Vector3Int(x + bounds.x - 1, y + bounds.y - 1, 0), tile);
+                    destiny.SetTile(new Vector3Int(x + bounds.x, y + bounds.y, 0), tile);
                 }
             }
         }

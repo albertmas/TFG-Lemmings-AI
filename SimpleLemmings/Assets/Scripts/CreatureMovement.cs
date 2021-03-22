@@ -44,9 +44,6 @@ public class CreatureMovement : MonoBehaviour
             transform.Translate(Vector3.right * movementSpeed * direction * Time.deltaTime);
             if (climbingSlope)
                 transform.Translate(Vector3.up * movementSpeed * Time.deltaTime);
-            //creatureRigidbody.AddForce(Vector2.right * direction * 5.0f);
-            //float clampedSpeed = Mathf.Clamp(creatureRigidbody.velocity.x, -movementSpeed, movementSpeed);
-            //creatureRigidbody.velocity = new Vector2(clampedSpeed, creatureRigidbody.velocity.y);
         }
 
         if (sceneManager.CheckForDamagingTile(transform.position - new Vector3(0f, 1f, 0f)))
