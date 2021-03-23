@@ -22,13 +22,17 @@ public class CreatureMovement : MonoBehaviour
     protected Animator anim;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         creatureRigidbody = GetComponent<Rigidbody2D>();
         sceneManager = FindObjectOfType<SceneManager>();
         anim = transform.Find("model").GetComponent<Animator>();
 
         fallOrigin = transform.position;
+    }
+
+    void Start()
+    {
         anim.Play("Run");
     }
 
@@ -45,6 +49,8 @@ public class CreatureMovement : MonoBehaviour
             if (climbingSlope)
                 transform.Translate(Vector3.up * movementSpeed * Time.deltaTime);
         }
+
+        if (transform.position.y < 0f) { Die(); }
 
         if (sceneManager.CheckForDamagingTile(transform.position - new Vector3(0f, 1f, 0f)))
         {

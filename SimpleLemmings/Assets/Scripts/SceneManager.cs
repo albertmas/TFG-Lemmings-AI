@@ -75,6 +75,8 @@ public class SceneManager : MonoBehaviour
 
     void Awake()
     {
+        audioSource = GetComponent<AudioSource>();
+        spawner = GameObject.FindGameObjectWithTag("Spawner").GetComponent<SpawnCreatures>();
         // Create Dictionary and fill it with each tile type and its data
         dataFromTiles = new Dictionary<TileBase, TileData>();
 
@@ -85,16 +87,17 @@ public class SceneManager : MonoBehaviour
                 dataFromTiles.Add(tile, data);
             }
         }
+
+        placedUmbrellas = new Dictionary<Vector3Int, GameObject>();
+        placedStairs = new Dictionary<Vector3Int, GameObject>();
     }
 
     private void Start()
     {
-        audioSource = GetComponent<AudioSource>();
-        placedUmbrellas = new Dictionary<Vector3Int, GameObject>();
-        placedStairs = new Dictionary<Vector3Int, GameObject>();
-        spawner = GameObject.FindGameObjectWithTag("Spawner").GetComponent<SpawnCreatures>();
-        creature = spawner.SpawnCreature();
-        Time.timeScale = gameSpeed;
+        if (!agentPlaying) {
+            Time.timeScale = gameSpeed;
+            creature = spawner.SpawnCreature();
+        }
     }
 
     void Update()

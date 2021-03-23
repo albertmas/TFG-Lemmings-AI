@@ -8,7 +8,7 @@ public class GroundDetector : MonoBehaviour
 
     CreatureMovement CreatureMovement;
 
-    void Start()
+    void Awake()
     {
         CreatureMovement = transform.root.GetComponent<CreatureMovement>();
     }

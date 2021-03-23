@@ -137,7 +137,7 @@ public class LemmingsAgent : Agent
 
                 List<int> unavailableActions = new List<int>();
 
-                for (int action = 0; action < allowedActions.Length; action++)
+                for (int action = 0; action < allowedActions.Length - 2; action++) // Temporary -2 prevents umbrellas and stairs from being removed
                 {
                     if (allowedActions[action] == false)
                         unavailableActions.Add(action + 1);

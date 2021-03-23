@@ -44,7 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ee72d2690dfa6441b801102331b2721, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentMap: 1
+  gameSpeed: 1
+  maxActions: 10
   playerInput: 1
+  agentPlaying: 0
   map: {fileID: 0}
   mapDetail: {fileID: 0}
   tileDatas:
@@ -73,6 +77,8 @@ MonoBehaviour:
   TileRStairs: {fileID: 11400000, guid: 45dd27634bffc43469fc840334b82525, type: 2}
   TileLStairs: {fileID: 11400000, guid: 8d6c0c4d5127eda408718448eecfd34b, type: 2}
   TileTop: {fileID: 11400000, guid: 6d9914b77e1c6d248aa26a6ee8fb985a, type: 2}
+  AIAgent: {fileID: 0}
+  selectedTilePos: {x: 1, y: 1, z: 1}
 --- !u!82 &4311044875421007922
 AudioSource:
   m_ObjectHideFlags: 0
