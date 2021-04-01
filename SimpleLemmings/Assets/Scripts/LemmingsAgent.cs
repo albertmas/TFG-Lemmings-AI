@@ -73,7 +73,7 @@ public class LemmingsAgent : Agent
                     {
                         // If there are no actions left penalize the agent
                         if (!sceneManager.RequestAction())
-                            AddReward(-0.05f);
+                            AddReward(-0.2f);
 
                         sceneManager.selectedTilePos = tilePos;
                         if (agentActions[actionNum] == 1) { sceneManager.BreakBlock(); }

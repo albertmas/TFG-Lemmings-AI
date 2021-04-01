@@ -50,6 +50,7 @@ public class CreatureMovement : MonoBehaviour
                 transform.Translate(Vector3.up * movementSpeed * Time.deltaTime);
         }
 
+        // Kill creature if it falls through the map
         if (transform.position.y < 0f) { Die(); }
 
         if (sceneManager.CheckForDamagingTile(transform.position - new Vector3(0f, 1f, 0f)))
