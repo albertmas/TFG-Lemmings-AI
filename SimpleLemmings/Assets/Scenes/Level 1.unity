@@ -1663,6 +1663,11 @@ PrefabInstance:
       objectReference: {fileID: 1176142533}
     - target: {fileID: 720190522179758953, guid: db3b66a497f177c4bbc3d6f26d392398,
         type: 3}
+      propertyPath: maxActions
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 720190522179758953, guid: db3b66a497f177c4bbc3d6f26d392398,
+        type: 3}
       propertyPath: BreakBlockUI
       value: 
       objectReference: {fileID: 1731680519}

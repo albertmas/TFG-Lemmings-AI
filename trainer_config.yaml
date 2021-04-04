@@ -25,4 +25,11 @@ behaviors:
     time_horizon: 128
     summary_freq: 10000
     threaded: true
-    framework: tensorflow
+env_settings:
+    env_path: .\LemmingsBuild\SimpleLemmings.exe
+    num_envs: 3
+engine_settings:
+    width: 84
+    height: 84
+    time_scale: 20
+    no_graphics: true
