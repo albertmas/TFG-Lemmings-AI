@@ -291,7 +291,7 @@ GameObject:
   m_Component:
   - component: {fileID: 471105930}
   - component: {fileID: 471105929}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1658,14 +1658,14 @@ PrefabInstance:
       objectReference: {fileID: 983252740}
     - target: {fileID: 720190522179758953, guid: db3b66a497f177c4bbc3d6f26d392398,
         type: 3}
+      propertyPath: gameSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 720190522179758953, guid: db3b66a497f177c4bbc3d6f26d392398,
+        type: 3}
       propertyPath: mapDetail
       value: 
       objectReference: {fileID: 1176142533}
-    - target: {fileID: 720190522179758953, guid: db3b66a497f177c4bbc3d6f26d392398,
-        type: 3}
-      propertyPath: maxActions
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 720190522179758953, guid: db3b66a497f177c4bbc3d6f26d392398,
         type: 3}
       propertyPath: BreakBlockUI
@@ -2174,6 +2174,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Level Tilemap
       objectReference: {fileID: 0}
+    - target: {fileID: 5083473884989025048, guid: 221056af9b910464c9a9f3d92a9dbd7c,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5083473884989025049, guid: 221056af9b910464c9a9f3d92a9dbd7c,
         type: 3}
       propertyPath: m_RootOrder
@@ -2427,6 +2432,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Details Tilemap
       objectReference: {fileID: 0}
+    - target: {fileID: 7153066451563267098, guid: a4cf00331e2922949a754ce8ccfcf1fb,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 7153066451563267099, guid: a4cf00331e2922949a754ce8ccfcf1fb,
         type: 3}
       propertyPath: m_RootOrder
@@ -2593,7 +2603,7 @@ PrefabInstance:
     - target: {fileID: 4898647281622066769, guid: 288009d36e3c5bf498a8b24fbdce0a90,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.5
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4898647281622066769, guid: 288009d36e3c5bf498a8b24fbdce0a90,
         type: 3}

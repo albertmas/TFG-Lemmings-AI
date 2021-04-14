@@ -71,18 +71,18 @@ public class LemmingsAgent : Agent
                     // Check that the intended action is allowed
                     if (allowedActions[agentActions[actionNum] - 1] == true)
                     {
-                        // If there are no actions left penalize the agent
-                        if (!sceneManager.RequestAction())
-                            AddReward(-0.2f);
-
-                        sceneManager.selectedTilePos = tilePos;
-                        if (agentActions[actionNum] == 1) { sceneManager.BreakBlock(); }
-                        else if (agentActions[actionNum] == 2) { sceneManager.PlaceUmbrella(); }
-                        else if (agentActions[actionNum] == 3) { sceneManager.BuildRStairs(); }
-                        else if (agentActions[actionNum] == 4) { sceneManager.BuildLStairs(); }
-                        else if (agentActions[actionNum] == 5) { sceneManager.DemolishBlock(); }
-                        else if (agentActions[actionNum] == 6) { sceneManager.RemoveUmbrella(); }
-                        else { Debug.LogWarning("Unknown action requested by agent"); }
+                        if (sceneManager.RequestAction())
+                        {
+                            sceneManager.selectedTilePos = tilePos;
+                            if (agentActions[actionNum] == 1) { sceneManager.BreakBlock(); }
+                            else if (agentActions[actionNum] == 2) { sceneManager.PlaceUmbrella(); }
+                            else if (agentActions[actionNum] == 3) { sceneManager.BuildRStairs(); }
+                            else if (agentActions[actionNum] == 4) { sceneManager.BuildLStairs(); }
+                            else if (agentActions[actionNum] == 5) { sceneManager.DemolishBlock(); }
+                            else if (agentActions[actionNum] == 6) { sceneManager.RemoveUmbrella(); }
+                            else { Debug.LogWarning("Unknown action requested by agent"); }
+                        }
+                        else { AddReward(-0.2f); } // If there are no actions left penalize the agent and igonre the action
                     }
                 }
 

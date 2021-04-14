@@ -137,7 +137,7 @@ Rigidbody2D:
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!70 &1657065721760679146
 CapsuleCollider2D:
@@ -169,6 +169,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementSpeed: 1
   fallingGravity: 12
+  floatHeight: 0.2
+  liftForce: 50
+  liftDamping: 20
   climbingSlope: 0
   hitGround: {fileID: 8300000, guid: 0a802b7998d945d459602b9eea6a02e3, type: 3}
 --- !u!1 &1657065721820330245
@@ -188,7 +191,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1657065721820330242
 Transform:
   m_ObjectHideFlags: 0
@@ -258,7 +261,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1657065722004590246
 Transform:
   m_ObjectHideFlags: 0

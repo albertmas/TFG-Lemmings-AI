@@ -10,7 +10,7 @@ public class SceneManager : MonoBehaviour
     [Header("Game Settings")]
     [Range(1, 5)]
     public int currentMap = 1;
-    [Range(1, 5)]
+    [Range(1, 20)]
     public int gameSpeed = 1;
     [Range(1, 30), Tooltip("Max actions per level.")]
     public int maxActions = 20;
@@ -444,6 +444,7 @@ public class SceneManager : MonoBehaviour
 
     public void PlaySound(AudioClip sound)
     {
+        if (agentPlaying) { return; } // Only play sounds if game is not being played by an agent
         audioSource.clip = sound;
         audioSource.Play();
     }
