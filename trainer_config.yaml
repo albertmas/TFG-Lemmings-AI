@@ -33,3 +33,6 @@ engine_settings:
     height: 84
     time_scale: 20
     no_graphics: true
+checkpoint_settings:
+    run_id: lemmings_01
+    resume: false
