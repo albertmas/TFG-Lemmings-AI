@@ -94,7 +94,7 @@ public class SceneManager : MonoBehaviour
 
     private void Start()
     {
-        if (!agentPlaying) {
+        if (!agentPlaying || !AIAgent.trainingMode) {
             Time.timeScale = gameSpeed;
             creature = spawner.SpawnCreature();
         }
