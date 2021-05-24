@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class SceneManager : MonoBehaviour
 {
     [Header("Game Settings")]
-    [Range(1, 5)]
+    [Range(1, 10)]
     public int currentMap = 1;
     [Range(1, 20)]
     public int gameSpeed = 1;
@@ -26,7 +26,7 @@ public class SceneManager : MonoBehaviour
 
     Dictionary<TileBase, TileData> dataFromTiles;
 
-    [Header("UI gameobjects")]
+    [Header("UI Gameobjects")]
     public GameObject CellSelection;
     public GameObject UIBreakBlock;
     public GameObject UIPlaceUmbrella;
@@ -49,7 +49,7 @@ public class SceneManager : MonoBehaviour
     public TileBase TileTop;
 
     [Space]
-    public LemmingsAgent AIAgent;
+    public LemmingsAgentNew AIAgent;
 
     GameObject creature;
     SpawnCreatures spawner;
@@ -466,11 +466,11 @@ public class SceneManager : MonoBehaviour
     /// <summary>
     /// Encode a tile using One-Hot Encoding
     /// </summary>
-    /// <param name="tilePos"> Tile to encode </param>
+    /// <param name="tilePos">Tile to encode.</param>
     /// <returns></returns>
     public int[] EncodeTile(Vector3Int tilePos)
     {
-        int[] code = new int[8] { 0, 0, 0, 0, 0, 0, 0, 0 };
+        int[] code = new int[7] { 0, 0, 0, 0, 0, 0, 0 };
 
         TileBase tile = map.GetTile(tilePos);
 
@@ -481,16 +481,16 @@ public class SceneManager : MonoBehaviour
             {
                 if (tileData.structural && !tileData.destructable) { code[1] = 1; } // Hard Tile
                 else if (tileData.structural && tileData.destructable) { code[2] = 1; } // Soft Tile
-                else if (tileData.damaging) { code[3] = 1; } // Damaging Tile
-                else if (tileData.portal) { code[4] = 1; } // Portal Tile
-                else if (tileData.highlight) { code[5] = 1; } // Umbrella Tile
+                //else if (tileData.damaging) { code[3] = 1; } // Damaging Tile
+                else if (tileData.portal) { code[3] = 1; } // Portal Tile
+                else if (tileData.highlight) { code[4] = 1; } // Umbrella Tile
                 else if (tileData.demolishable)
                 {
                     if (placedStairs.TryGetValue(tilePos, out GameObject stairs))
                     {
                         string name = stairs.GetComponent<SpriteRenderer>().sprite.name;
-                        if (name.Equals("Stairs Right")) { code[6] = 1; } // Stairs Right Tile
-                        else if (name.Equals("Stairs Left")) { code[7] = 1; } // Stairs Left Tile
+                        if (name.Equals("Stairs Right")) { code[5] = 1; } // Stairs Right Tile
+                        else if (name.Equals("Stairs Left")) { code[6] = 1; } // Stairs Left Tile
                     }
                 }
             }

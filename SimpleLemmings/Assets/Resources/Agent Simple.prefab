@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3499807951713915051}
   - component: {fileID: 9105431319929641453}
   m_Layer: 0
-  m_Name: Agent
+  m_Name: Agent Simple
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -60,7 +60,7 @@ MonoBehaviour:
   m_BehaviorType: 0
   m_BehaviorName: Lemmings
   TeamId: 0
-  m_UseChildSensors: 1
+  m_UseChildSensors: 0
   m_UseChildActuators: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &3499807951713915051

@@ -92,7 +92,7 @@ public class LemmingsAgent : Agent
 
     /// <summary>
     /// Collect information from the environment
-    /// 1026 Total Observations
+    /// 898 Total Observations
     /// </summary>
     /// <param name="sensor">The vector sensor</param>
     public override void CollectObservations(VectorSensor sensor)
@@ -106,7 +106,7 @@ public class LemmingsAgent : Agent
             for (int w = 0; w < sceneManager.MapWidth; w++) // 16 Tiles Wide
             {
                 // Encode tile
-                int[] tileCode = sceneManager.EncodeTile(new Vector3Int(w, h, 0)); // 8 Digit Code
+                int[] tileCode = sceneManager.EncodeTile(new Vector3Int(w, h, 0)); // 7 Digit Code
 
                 // Send each value of the code as an observation
                 for (int i = 0; i < tileCode.Length; i++)
@@ -114,7 +114,7 @@ public class LemmingsAgent : Agent
                     sensor.AddObservation(tileCode[i]);
                 }
             }
-            // 1024 Observations
+            // 896 Observations
         }
     }
 
