@@ -57,6 +57,9 @@ public class LemmingsAgentNew : Agent
     {
         if (decisionsLeft > 0)
             RequestDecision();
+
+        //if (StepCount % MaxStep == 0)
+        //    RewardDistanceToPortal();
     }
 
     /// <summary>
@@ -181,5 +184,11 @@ public class LemmingsAgentNew : Agent
     {
         if (trainingMode)
             AddReward(0.2f);
+    }
+
+    public void RewardDistanceToPortal()
+    {
+        Debug.Log("distance reward");
+        AddReward(0.2f);
     }
 }

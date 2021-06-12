@@ -52,6 +52,7 @@ public class SceneManager : MonoBehaviour
     public LemmingsAgentNew AIAgent;
 
     GameObject creature;
+    GameObject portal;
     SpawnCreatures spawner;
 
     public int MapWidth { get; private set; } = 16;
@@ -71,12 +72,16 @@ public class SceneManager : MonoBehaviour
     public int TotalActions { get; private set; } = 6;
     int actionsCount = 0; // Number of actions done
 
+    float distanceCreatureToPortal = 0f; // Last checked distance from the creature to the portal
+    float distanceSpawnerToPortal = 0f; // Total distance between the spawner and the portal
+
     AudioSource audioSource;
 
     void Awake()
     {
         audioSource = GetComponent<AudioSource>();
         spawner = GameObject.FindGameObjectWithTag("Spawner").GetComponent<SpawnCreatures>();
+        portal = GameObject.FindGameObjectWithTag("Portal");
         // Create Dictionary and fill it with each tile type and its data
         dataFromTiles = new Dictionary<TileBase, TileData>();
 
@@ -98,10 +103,16 @@ public class SceneManager : MonoBehaviour
             Time.timeScale = gameSpeed;
             creature = spawner.SpawnCreature();
         }
+
+        // Set creature's initial distance to the portal
+        distanceSpawnerToPortal = (portal.transform.position - spawner.transform.position).magnitude;
+        distanceCreatureToPortal = distanceSpawnerToPortal;
     }
 
     void Update()
     {
+        if (agentPlaying) { CheckCreatureDistanceToPortal(); }
+
         if (!playerInput) { return; }
 
         if (Input.GetKeyUp(KeyCode.R)) { RestartLevel(); }
@@ -547,12 +558,51 @@ public class SceneManager : MonoBehaviour
             AIAgent.LemmingCheckpoint();
     }
 
+    bool FindLemming()
+    {
+        // Find Lemming if creture is null. Return true if creature exists
+        if (!creature) { creature = GameObject.FindGameObjectWithTag("Creature"); }
+        return creature != null;
+    }
+
     public Vector2Int GetLemmingPos()
     {
         Vector2Int pos = Vector2Int.zero;
-        if (!creature) { creature = GameObject.FindGameObjectWithTag("Creature"); }
-        if (creature) { pos = (Vector2Int)map.WorldToCell(creature.transform.position); }
+        if (FindLemming()) { pos = (Vector2Int)map.WorldToCell(creature.transform.position); }
         return pos;
+    }
+
+    void CheckCreatureDistanceToPortal()
+    {
+        if (FindLemming())
+        {
+            // Check new distance
+            float distanceToPortal = ((Vector2)portal.transform.position - (Vector2)creature.transform.position).magnitude;
+
+            if (distanceToPortal < distanceCreatureToPortal)
+            {
+                const int steps = 6;
+                float stepDistance = distanceSpawnerToPortal / steps;
+                int currentStep = 0;
+                int lastStep = 0;
+
+                // Check last and current steps according to the last and current distances
+                for (int i = 1; i < steps; i++)
+                {
+                    if (distanceCreatureToPortal < stepDistance * (steps - i))
+                        lastStep = i;
+                    if (distanceToPortal < stepDistance * (steps - i))
+                        currentStep = i;
+                }
+
+                // Reward agent if creature gets a step closer to the portal
+                if (currentStep > lastStep)
+                    AIAgent.RewardDistanceToPortal(); //Debug.Log("New step: " + currentStep);
+
+                // Set new distance to the portal
+                distanceCreatureToPortal = distanceToPortal;
+            }
+        }
     }
 
 
@@ -596,6 +646,9 @@ public class SceneManager : MonoBehaviour
         {
             point.GetComponent<Checkpoint>().ResetPoint();
         }
+
+        // Reset distance to portal
+        distanceCreatureToPortal = distanceSpawnerToPortal;
     }
 
     void CopyTilemap(Tilemap destiny, Tilemap original)
