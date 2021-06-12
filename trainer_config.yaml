@@ -2,7 +2,7 @@ behaviors:
   Lemmings:
     trainer_type: ppo
     hyperparameters:
-      batch_size: 2048
+      batch_size: 512
       buffer_size: 20480
       learning_rate: 0.0003
       beta: 0.005
@@ -12,8 +12,8 @@ behaviors:
       learning_rate_schedule: linear
     network_settings:
       normalize: false
-      hidden_units: 256
-      num_layers: 2
+      hidden_units: 128
+      num_layers: 3
       vis_encode_type: simple
     reward_signals:
       extrinsic:
@@ -26,13 +26,15 @@ behaviors:
     summary_freq: 10000
     threaded: true
 env_settings:
-    env_path: .\LemmingsBuild\SimpleLemmings.exe
-    num_envs: 3
+    env_path: .\Lemmings_lvl6.2\SimpleLemmings.exe
+    num_envs: 4
 engine_settings:
-    width: 84
-    height: 84
+    width: 320
+    height: 180
     time_scale: 20
-    no_graphics: true
+    no_graphics: false
 checkpoint_settings:
-    run_id: lemmings_01
-    resume: false
+    run_id: lemmings_19
+    initialize_from: null
+    resume: true
+    # force: true

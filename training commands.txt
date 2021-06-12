@@ -1,0 +1,8 @@
+conda activate ml-agents-13
+
+cd Documents\MLAgents\Lemmings
+
+mlagents-learn .\trainer_config.yaml
+
+--------
+--run-id=lemmings_04
