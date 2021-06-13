@@ -581,7 +581,7 @@ public class SceneManager : MonoBehaviour
 
             if (distanceToPortal < distanceCreatureToPortal)
             {
-                const int steps = 6;
+                const int steps = 12;
                 float stepDistance = distanceSpawnerToPortal / steps;
                 int currentStep = 0;
                 int lastStep = 0;
@@ -612,11 +612,10 @@ public class SceneManager : MonoBehaviour
         actionsCount = 0;
 
         // Reset the map
-        string mapPath = "Tilemaps/Level ";
-        mapPath += currentMap;
-        CopyTilemap(map, Resources.Load<Tilemap>(mapPath));
-        mapPath += " Details";
-        CopyTilemap(mapDetail, Resources.Load<Tilemap>(mapPath));
+        string mapPath = "Tilemaps/Level " + currentMap;
+        Grid gridPrefab = Resources.Load<Grid>(mapPath);
+        CopyTilemap(map, gridPrefab.transform.GetChild(0).GetComponent<Tilemap>());
+        CopyTilemap(mapDetail, gridPrefab.transform.GetChild(1).GetComponent<Tilemap>());
 
         // Respawn the creature
         Destroy(creature);

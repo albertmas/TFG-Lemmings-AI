@@ -186,9 +186,12 @@ public class LemmingsAgentNew : Agent
             AddReward(0.2f);
     }
 
+    /// <summary>
+    /// Slightly reward the agent when getting closer to the portal
+    /// </summary>
     public void RewardDistanceToPortal()
     {
         Debug.Log("distance reward");
-        AddReward(0.2f);
+        AddReward(0.1f);
     }
 }
