@@ -17,6 +17,15 @@ public class LemmingsAgentNew : Agent
     [Tooltip("Number of decisions allowed to the agent per episode")]
     public int decisions = 10;
 
+    [Tooltip("Whether the agent is rewarded when getting close to the portal")]
+    public bool distanceReward;
+
+    [Tooltip("Number of steps from the spawn point to the portal")]
+    public int distanceSteps = 10;
+
+    [Tooltip("Agent reward per step")]
+    public float stepReward = 0.1f;
+
     int decisionsLeft = 0;
 
     [SerializeField]
@@ -192,6 +201,6 @@ public class LemmingsAgentNew : Agent
     public void RewardDistanceToPortal()
     {
         Debug.Log("distance reward");
-        AddReward(0.1f);
+        AddReward(stepReward);
     }
 }

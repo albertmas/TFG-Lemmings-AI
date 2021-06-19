@@ -111,7 +111,7 @@ public class SceneManager : MonoBehaviour
 
     void Update()
     {
-        if (agentPlaying) { CheckCreatureDistanceToPortal(); }
+        if (agentPlaying && AIAgent.distanceReward) { CheckCreatureDistanceToPortal(); }
 
         if (!playerInput) { return; }
 
@@ -581,7 +581,7 @@ public class SceneManager : MonoBehaviour
 
             if (distanceToPortal < distanceCreatureToPortal)
             {
-                const int steps = 12;
+                int steps = AIAgent.distanceSteps;
                 float stepDistance = distanceSpawnerToPortal / steps;
                 int currentStep = 0;
                 int lastStep = 0;
