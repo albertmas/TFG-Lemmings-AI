@@ -907,6 +907,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2768296644922575309, guid: c5f1213b95332d84dba8ea38cd79cb94,
+        type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 5022602860645237092, guid: 1ae3c2326ec4fc44a8aebb218f493294,
+        type: 3}
     - target: {fileID: 4011484869239466769, guid: c5f1213b95332d84dba8ea38cd79cb94,
         type: 3}
       propertyPath: decisions
@@ -914,9 +920,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4011484869239466769, guid: c5f1213b95332d84dba8ea38cd79cb94,
         type: 3}
+      propertyPath: stepReward
+      value: 0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 4011484869239466769, guid: c5f1213b95332d84dba8ea38cd79cb94,
+        type: 3}
       propertyPath: sceneManager
       value: 
       objectReference: {fileID: 1759162233}
+    - target: {fileID: 4011484869239466769, guid: c5f1213b95332d84dba8ea38cd79cb94,
+        type: 3}
+      propertyPath: distanceReward
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4813073631521631925, guid: c5f1213b95332d84dba8ea38cd79cb94,
         type: 3}
       propertyPath: m_RootOrder

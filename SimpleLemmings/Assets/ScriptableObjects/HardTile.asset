@@ -13,9 +13,6 @@ MonoBehaviour:
   m_Name: HardTile
   m_EditorClassIdentifier: 
   tiles:
-  - {fileID: 11400000, guid: ad880ca1b5536204a94b1cf8512adec6, type: 2}
-  - {fileID: 11400000, guid: be4589f5fbd96594688eaeb6cd1d1f97, type: 2}
-  - {fileID: 11400000, guid: 89b62011adf0d6041badd5d536340142, type: 2}
   - {fileID: 11400000, guid: 018da6a38f3cea840b6997cb4a72af8f, type: 2}
   selectable: 0
   destructable: 0

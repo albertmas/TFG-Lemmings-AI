@@ -44,16 +44,6 @@ public class CreatureMovement : MonoBehaviour
     {
         if (!IsAlive) { return; }
 
-        //if (isGrounded)
-        //{
-        //    // Creature is walking
-        //    int direction = goingRight ? 1 : -1;
-        //    rbody.velocity = new Vector2(0.4f * direction, rbody.velocity.y);
-        //    transform.Translate(Vector3.right * movementSpeed * direction * Time.deltaTime);
-        //    if (climbingSlope)
-        //        transform.Translate(Vector3.up * movementSpeed * Time.deltaTime);
-        //}
-
         // Kill creature if it falls through the map
         if (transform.position.y < 0f) { Die(); }
 
@@ -131,7 +121,6 @@ public class CreatureMovement : MonoBehaviour
             if (hasUmbrella)
             {
                 hasUmbrella = false;
-                //creatureRigidbody.gravityScale = 3;
             }
             else if (Mathf.Abs(fallHeight) >= deadlyHeight)
             {
@@ -147,15 +136,13 @@ public class CreatureMovement : MonoBehaviour
     public void EquipUmbrella()
     {
         hasUmbrella = true;
-        //creatureRigidbody.gravityScale = .05f;
     }
 
     void Die()
     {
         anim.Play("Die");
         IsAlive = false;
-        //rbody.velocity = Vector3.zero;
-        //sceneManager.PlaySound(hitGround);
+        sceneManager.PlaySound(hitGround);
         sceneManager.CreatureDefeated();
     }
 }

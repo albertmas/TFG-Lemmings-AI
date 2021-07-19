@@ -39,7 +39,7 @@ public class LemmingsAgentNew : Agent
         // If not training mode, no max step, play forever
         if (!trainingMode)
         {
-            MaxStep = 0;
+            //MaxStep = 0;
             sceneManager.playerInput = false;
         }
 
@@ -67,8 +67,8 @@ public class LemmingsAgentNew : Agent
         if (decisionsLeft > 0)
             RequestDecision();
 
-        //if (StepCount % MaxStep == 0)
-        //    RewardDistanceToPortal();
+        if (!trainingMode && Input.GetKeyDown(KeyCode.R))
+            EndEpisode();
     }
 
     /// <summary>
